@@ -1,0 +1,545 @@
+---
+/**
+ * Career tour: a calm pixel-art walk from BRAC University in Dhaka to Dhaka Kacchi in Berlin.
+ * Self-contained (own CSS + script). Text comes only from profile.json `stations` + `projects`.
+ *
+ * Without JS the map is hidden and the full station list below it is shown instead.
+ */
+import p from '../../data/profile.json';
+import { STOPS, BASE_Y, CITY_SIGNS, AIRPORT_SIGNS } from '../../scripts/tour/world';
+
+type Project = { id: string; title: string; year?: string; summary?: string; links?: { label: string; url: string }[] };
+const projById: Record<string, Project> = Object.fromEntries((p.projects as Project[]).map((x) => [x.id, x]));
+const stations = p.stations.filter((s) => STOPS[s.id]);
+
+/** "Jan 2018 – Dec 2019" → "2018–19"; "Sep 2026 – present" → "2026–now". */
+const short = (period: string) => {
+  const ys = period.match(/\d{4}/g) || [];
+  const now = /present|now/i.test(period);
+  const a = ys[0] || '';
+  const b = now ? 'now' : ys[ys.length - 1] || '';
+  if (!b || a === b) return a;
+  return `${a}–${b === 'now' ? 'now' : b.slice(2)}`;
+};
+const spoken = (period: string) => period.replace(/\s*–\s*/g, ' to ');
+
+const json = JSON.stringify(
+  stations.map((s) => ({
+    id: s.id,
+    kind: s.kind,
+    name: s.name,
+    role: s.role,
+    period: s.period,
+    city: s.city,
+    overview: s.overview,
+    narration: s.narration,
+  })),
+).replace(/</g, '\\u003c');
+
+const icon = {
+  play: 'M2 0h2v8H2zM4 1h1v6H4zM5 2h1v4H5zM6 3h1v2H6z',
+  pause: 'M1 1h2v6H1zM5 1h2v6H5z',
+  prev: 'M1 1h1v6H1zM3 3h1v2H3zM4 2h1v4H4zM5 1h1v6H5zM6 0h1v8H6z',
+  next: 'M6 1h1v6H6zM4 3h1v2H4zM3 2h1v4H3zM2 1h1v6H2zM1 0h1v8H1z',
+  restart: 'M2 1h4v1H2zM1 2h1v4H1zM2 6h4v1H2zM6 4h1v2H6zM5 0h1v4H5zM3 2h3v1H3z',
+  voice: 'M0 3h2v2H0zM2 2h1v4H2zM3 1h1v6H3zM5 2h1v1H5zM5 5h1v1H5zM6 3h1v2H6z',
+};
+---
+
+<section id="career-tour-map" class="ct" aria-label="Career tour map" data-ct>
+  <script is:inline type="application/json" data-ct-json set:html={json} />
+  <noscript><style is:inline>.ct-frame { display: none !important; }</style></noscript>
+
+
+  <div class="ct-frame">
+    <div
+      class="ct-stage"
+      data-stage
+      tabindex="0"
+      role="region"
+      aria-label="Career map. Space plays or pauses, left and right arrows move between stops."
+    >
+      <canvas class="ct-canvas" data-canvas aria-hidden="true"></canvas>
+      <div class="ct-layer" data-layer style={`--by:${BASE_Y}`}>
+        {CITY_SIGNS.map((c) => <span class="ct-city" style={`--x:${c.x}`} aria-hidden="true">{c.text}</span>)}
+        {AIRPORT_SIGNS.map((c) => <span class="ct-city ct-air" style={`--x:${c.x}`} aria-hidden="true">{c.text}</span>)}
+        {
+          stations.map((s, i) => {
+            const st = STOPS[s.id];
+            return (
+              <button
+                type="button"
+                class="ct-stop"
+                data-stop={i}
+                style={`--x:${st.x};--w:${st.w};--h:${st.h}`}
+                aria-label={`${s.name}, ${s.role}, ${spoken(s.period)}`}
+                aria-describedby={`ct-ov-${s.id}`}
+              >
+                <span class="ct-sign" aria-hidden="true">
+                  <span class="ct-sign-name">{st.sign}</span>
+                  <span class="ct-sign-yr">{short(s.period)}</span>
+                </span>
+                <span class="ct-sr" id={`ct-ov-${s.id}`}>{s.overview}</span>
+              </button>
+            );
+          })
+        }
+      </div>
+      <div class="ct-tip" data-tip aria-hidden="true" hidden></div>
+    </div>
+
+    <div class="ct-controls" role="group" aria-label="Tour controls">
+      <div class="ct-transport">
+        <button type="button" class="ct-btn ct-play" data-act="play" aria-label="Play the tour">
+          <svg class="ct-ico ct-ico-play" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.play} /></svg>
+          <svg class="ct-ico ct-ico-pause" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.pause} /></svg>
+          <span data-label>Play tour</span>
+        </button>
+        <button type="button" class="ct-btn ct-icon" data-act="prev" aria-label="Previous stop" title="Previous stop (←)">
+          <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.prev} /></svg>
+        </button>
+        <button type="button" class="ct-btn ct-icon" data-act="next" aria-label="Next stop" title="Next stop (→)">
+          <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.next} /></svg>
+        </button>
+        <button type="button" class="ct-btn ct-icon" data-act="restart" aria-label="Restart the tour" title="Restart">
+          <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.restart} /></svg>
+        </button>
+      </div>
+      <div class="ct-opts">
+        <div class="ct-speed" role="group" aria-label="Speed">
+          {
+            [0.75, 1, 1.5].map((v) => (
+              <button type="button" class="ct-btn ct-seg" data-act="speed" data-speed={v} aria-pressed={v === 1 ? 'true' : 'false'} aria-label={`Speed ${v} times`}>
+                {v}×
+              </button>
+            ))
+          }
+        </div>
+        <button type="button" class="ct-btn ct-voice" data-act="voice" aria-pressed="false" hidden title="Read the narration aloud">
+          <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.voice} /></svg>
+          <span data-label>Voice off</span>
+        </button>
+      </div>
+      <div class="ct-where" aria-hidden="true">
+        <span class="ct-status" data-status>Stop 1 of {stations.length}</span>
+        <span class="ct-dots">{stations.map((_, i) => <span class="ct-dot" data-dot={i}></span>)}</span>
+      </div>
+    </div>
+
+    <aside class="ct-panel fade" data-panel aria-label="Narration">
+      <p class="ct-kicker" data-kicker>Career tour · {stations.length} stops</p>
+      <h3 class="ct-pname" data-pname>From Dhaka to Berlin</h3>
+      <p class="ct-pmeta" data-pmeta>Press Play and I’ll walk you through my career, one stop at a time.</p>
+      <ul class="ct-bullets" data-bullets>
+        <li>Hover or focus a building for a short overview.</li>
+        <li>Click it for the full story: role, projects, clients and stack.</li>
+      </ul>
+      <button type="button" class="ct-more" data-more hidden>Read more</button>
+      <div class="ct-prog" aria-hidden="true"><span data-prog></span></div>
+      <p class="ct-sr" aria-live="polite" data-live></p>
+    </aside>
+  </div>
+
+  <div class="ct-list" data-list>
+    <h3 class="ct-list-title">All stops</h3>
+    <ol>
+      {
+        stations.map((s) => (
+          <li>
+            <article class="ct-detail" data-detail={s.id}>
+              <h4>{s.name}</h4>
+              <p class="ct-d-meta">
+                {s.role} · {s.period} · {s.city}
+              </p>
+              <div class="ct-d-body">
+                <p class="ct-d-about">{s.about}</p>
+                {s.did.length > 0 && (
+                  <>
+                    <h5>What I did</h5>
+                    <ul class="ct-d-did">
+                      {s.did.map((d) => (
+                        <li>{d}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {s.projects.length > 0 && (
+                  <>
+                    <h5>Projects I built there</h5>
+                    <ul class="ct-d-proj">
+                      {s.projects
+                        .map((id) => projById[id])
+                        .filter(Boolean)
+                        .map((pr) => (
+                          <li>
+                            <strong>{pr.title}</strong>
+                            {pr.year && <span class="ct-d-yr"> · {pr.year}</span>}
+                            {pr.summary && <span class="ct-d-sum">{pr.summary}</span>}
+                            {pr.links && pr.links.length > 0 && (
+                              <span class="ct-d-links">
+                                {pr.links.map((l) => (
+                                  <a href={l.url} target="_blank" rel="noopener">
+                                    {l.label}
+                                    <span class="ct-sr"> (opens in a new tab)</span>
+                                  </a>
+                                ))}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                    </ul>
+                  </>
+                )}
+                {s.clients.length > 0 && (
+                  <>
+                    <h5>Clients</h5>
+                    <p class="ct-d-clients">{s.clients.join(' · ')}</p>
+                  </>
+                )}
+                {s.stack.length > 0 && (
+                  <>
+                    <h5>Stack</h5>
+                    <ul class="ct-chips">
+                      {s.stack.map((t) => (
+                        <li>{t}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+
+  <dialog class="ct-dialog" data-dialog aria-labelledby="ct-dlg-title">
+    <div class="ct-dlg-in">
+      <header class="ct-dlg-head">
+        <div>
+          <p class="ct-kicker" data-dkicker></p>
+          <h2 id="ct-dlg-title" data-dtitle></h2>
+          <p class="ct-pmeta" data-dmeta></p>
+        </div>
+        <button type="button" class="ct-btn ct-icon ct-close" data-close aria-label="Close details">
+          <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d="M1 1h1v1H1zM2 2h1v1H2zM3 3h2v2H3zM5 2h1v1H5zM6 1h1v1H6zM2 5h1v1H2zM1 6h1v1H1zM5 5h1v1H5zM6 6h1v1H6z" /></svg>
+        </button>
+      </header>
+      <div class="ct-dlg-body" data-dbody></div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  import { initTour } from '../../scripts/tour/tour';
+  document.querySelectorAll<HTMLElement>('[data-ct]').forEach((el) => initTour(el));
+</script>
+
+<style is:global>
+  .ct {
+    --ct-plum: #2b2235;
+    --ct-paper: #fffaf0;
+    --ct-cream: #fff1d6;
+    --ct-saffron: #f2c14e;
+    --ct-shadow: #e8c9a0;
+    --ct-green: #1f7a5c;
+    --ct-muted: #5a4a55;
+    --ct-mint: #6cc7a8;
+    --ct-head: 'Pixelify Sans', ui-rounded, system-ui, sans-serif;
+    --ct-label: 'Silkscreen', ui-monospace, monospace;
+    --ct-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color: var(--ct-plum);
+    font-family: var(--ct-body);
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+  .ct *, .ct *::before, .ct *::after { box-sizing: border-box; }
+  .ct-sr {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .ct :focus-visible { outline: 3px solid var(--ct-saffron); outline-offset: 2px; box-shadow: 0 0 0 5px var(--ct-plum); }
+
+  .ct-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin: 0 0 12px; }
+  .ct-head h2 { font: 600 clamp(24px, 3vw, 32px)/1.15 var(--ct-head); margin: 0; }
+  .ct-sub { margin: 0; font-size: 17px; color: var(--ct-muted); }
+
+  .ct-frame { position: relative; }
+
+  /* ---------------------------------------------------------------- stage */
+  .ct-stage {
+    position: relative;
+    height: clamp(380px, 60vh, 560px);
+    overflow: hidden;
+    overflow: clip; /* no programmatic scrolling when a station button takes focus */
+    background: #a9dbf5;
+    border: 3px solid var(--ct-plum);
+    box-shadow: 6px 6px 0 var(--ct-shadow);
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+  }
+  .ct-stage.is-dragging { cursor: grabbing; }
+  .ct-stage:focus-visible { outline-offset: 4px; }
+  .ct-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+  .ct-layer { position: absolute; left: 0; top: 0; width: 0; height: 100%; will-change: transform; --k: 2; --oy: 0px; }
+
+  .ct-stop {
+    position: absolute;
+    left: calc((var(--x) - var(--w) / 2) * var(--k) * 1px);
+    top: calc(var(--oy) + (var(--by) - var(--h)) * var(--k) * 1px);
+    width: calc(var(--w) * var(--k) * 1px);
+    height: calc((var(--h) + 12) * var(--k) * 1px);
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+  }
+  .ct-stop:hover { background: rgba(255, 250, 240, 0.12); }
+  .ct-stop:focus-visible { outline: 3px solid var(--ct-saffron); outline-offset: 0; box-shadow: inset 0 0 0 3px var(--ct-plum); }
+  .ct-sign {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 4px);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px 7px 2px;
+    background: var(--ct-paper);
+    border: 2px solid var(--ct-plum);
+    box-shadow: 2px 2px 0 rgba(43, 34, 53, 0.35);
+    white-space: nowrap;
+    line-height: 1.1;
+    pointer-events: auto;
+  }
+  .ct-sign::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 2px;
+    height: 6px;
+    margin-left: -1px;
+    background: var(--ct-plum);
+  }
+  .ct-sign-name { font: 400 12px var(--ct-label); text-transform: uppercase; letter-spacing: 0.02em; }
+  .ct-sign-yr { font: 400 10px var(--ct-label); color: var(--ct-muted); }
+  .ct-stop:hover .ct-sign,
+  .ct-stop:focus-visible .ct-sign { background: #fff3c4; }
+  .ct-stop.is-current .ct-sign { background: var(--ct-saffron); }
+  .ct-stop.is-current .ct-sign-yr { color: var(--ct-plum); }
+
+  .ct-city {
+    position: absolute;
+    left: calc(var(--x) * var(--k) * 1px);
+    top: calc(var(--oy) + (var(--by) - 34) * var(--k) * 1px);
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    font: 400 12px var(--ct-label);
+    text-transform: uppercase;
+    color: var(--ct-paper);
+    background: var(--ct-green);
+    border: 2px solid var(--ct-plum);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .ct-air { top: calc(var(--oy) + (var(--by) - 30) * var(--k) * 1px); background: var(--ct-plum); color: var(--ct-saffron); font-size: 10px; padding: 1px 5px; }
+
+  .ct-tip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 6;
+    width: max-content;
+    max-width: min(300px, calc(100% - 16px));
+    padding: 10px 12px;
+    background: var(--ct-paper);
+    border: 2px solid var(--ct-plum);
+    box-shadow: 4px 4px 0 var(--ct-shadow);
+    font-size: 15px;
+    line-height: 1.45;
+    pointer-events: none;
+  }
+  .ct-tip[hidden] { display: none; }
+  .ct-tip strong { display: block; font: 600 17px/1.2 var(--ct-head); margin-bottom: 2px; }
+  .ct-tip span { display: block; }
+  .ct-tip em { display: block; margin-top: 4px; font: 400 11px var(--ct-label); font-style: normal; text-transform: uppercase; color: var(--ct-green); }
+
+  /* ---------------------------------------------------------------- narration panel */
+  .ct-panel {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    z-index: 4;
+    width: min(460px, 36%);
+    max-height: calc(clamp(380px, 60vh, 560px) - 32px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 14px 18px 16px;
+    background: var(--ct-paper);
+    border: 3px solid var(--ct-plum);
+    box-shadow: 5px 5px 0 rgba(43, 34, 53, 0.25);
+  }
+  .ct-kicker { margin: 0 0 4px; font: 400 12px var(--ct-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--ct-green); }
+  .ct-pname { margin: 0; font: 600 clamp(22px, 2.2vw, 27px)/1.15 var(--ct-head); }
+  .ct-pmeta { margin: 4px 0 0; font-size: 15px; line-height: 1.4; color: var(--ct-muted); }
+  .ct-bullets { margin: 10px 0 0; padding: 0 4px 0 0; list-style: none; flex: 0 1 auto; min-height: 0; overflow: auto; }
+  .ct-bullets li { position: relative; padding: 0 0 0 20px; margin: 0 0 6px; font-size: 17px; line-height: 1.5; transition: background-color 0.3s; }
+  .ct-bullets li::before { content: ''; position: absolute; left: 3px; top: 0.62em; width: 7px; height: 7px; background: var(--ct-saffron); box-shadow: 0 0 0 2px var(--ct-plum); }
+  .ct-bullets li.is-speaking { background: #fff1c2; box-shadow: -6px 0 0 #fff1c2, 6px 0 0 #fff1c2; }
+  .ct-panel.is-walking .ct-pname,
+  .ct-panel.is-walking .ct-pmeta { opacity: 0.6; }
+  .ct-panel.fade > :not(.ct-prog):not([data-live]) { animation: ct-fade 0.7s ease both; }
+  @keyframes ct-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .ct-panel.is-walking.fade .ct-pname,
+  .ct-panel.is-walking.fade .ct-pmeta { animation-name: ct-fade-dim; }
+  @keyframes ct-fade-dim { from { opacity: 0; } to { opacity: 0.6; } }
+  .ct-more {
+    flex: none;
+    align-self: flex-start;
+    margin: 8px 0 0;
+    min-height: 44px;
+    padding: 8px 14px;
+    font: 700 16px var(--ct-body);
+    color: var(--ct-plum);
+    background: #fff;
+    border: 2px solid var(--ct-plum);
+    border-bottom-width: 4px;
+    cursor: pointer;
+  }
+  .ct-more:hover { background: var(--ct-saffron); }
+  .ct-more[hidden] { display: none; }
+  .ct-prog { flex: none; height: 6px; margin: 12px 0 0; background: #f0e2c4; border: 2px solid var(--ct-plum); box-sizing: content-box; overflow: hidden; }
+  .ct-prog span { display: block; height: 100%; background: var(--ct-green); transform-origin: 0 50%; transform: scaleX(0); }
+
+  /* ---------------------------------------------------------------- controls */
+  .ct-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin: 14px 0 0;
+  }
+  .ct-transport, .ct-opts, .ct-speed { display: flex; align-items: center; gap: 6px; }
+  .ct-opts { gap: 10px; }
+  .ct-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 6px 12px;
+    font: 400 14px var(--ct-label);
+    text-transform: uppercase;
+    color: var(--ct-plum);
+    background: #fff;
+    border: 2px solid var(--ct-plum);
+    border-bottom-width: 4px;
+    cursor: pointer;
+  }
+  .ct-btn:hover { background: #fff3c4; }
+  .ct-btn:active { border-bottom-width: 2px; transform: translateY(2px); }
+  .ct-btn[hidden] { display: none; }
+  .ct-icon { padding: 6px; }
+  .ct-ico { width: 16px; height: 16px; fill: currentColor; shape-rendering: crispEdges; flex: none; }
+  .ct-play { background: var(--ct-saffron); min-width: 140px; font-size: 15px; }
+  .ct-play:hover { background: #ffd877; }
+  .ct-ico-pause, .ct-play.is-playing .ct-ico-play { display: none; }
+  .ct-play.is-playing .ct-ico-pause { display: block; }
+  .ct-seg { min-width: 52px; padding: 6px 8px; }
+  .ct-seg[aria-pressed='true'], .ct-voice[aria-pressed='true'] { background: var(--ct-green); color: #fff; }
+  .ct-where { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .ct-status { font: 400 13px var(--ct-label); text-transform: uppercase; color: var(--ct-muted); white-space: nowrap; }
+  .ct-dots { display: flex; gap: 4px; }
+  .ct-dot { width: 10px; height: 10px; background: #f0e2c4; border: 2px solid var(--ct-plum); }
+  .ct-dot.is-on { background: var(--ct-mint); }
+  .ct-dot.is-now { background: var(--ct-saffron); }
+
+  /* ---------------------------------------------------------------- station list (screen readers, no JS) */
+  .ct-list { margin: 20px 0 0; }
+  .ct-list ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+  .ct-list-title { font: 600 22px var(--ct-head); margin: 0 0 10px; }
+  .ct-detail h4 { font: 600 20px var(--ct-head); margin: 0; }
+  .ct.js .ct-list {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .ct-d-meta { margin: 2px 0 6px; color: var(--ct-muted); font-size: 15px; }
+  .ct-d-body h5 { font: 400 13px var(--ct-label); text-transform: uppercase; letter-spacing: 0.04em; color: var(--ct-green); margin: 16px 0 6px; }
+  .ct-d-body p, .ct-d-body li { font-size: 17px; line-height: 1.55; }
+  .ct-d-about { margin: 0; }
+  .ct-d-did { margin: 0; padding-left: 20px; }
+  .ct-d-did li { margin: 0 0 4px; }
+  .ct-d-proj { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ct-d-proj li { padding: 10px 12px; background: #fff; border: 2px solid var(--ct-plum); }
+  .ct-d-proj strong { font-weight: 700; }
+  .ct-d-yr { color: var(--ct-muted); font-size: 15px; }
+  .ct-d-sum { display: block; margin-top: 2px; }
+  .ct-d-links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 4px; }
+  .ct-d-links a { display: inline-flex; align-items: center; min-height: 32px; font-weight: 700; color: #2f548c; text-underline-offset: 3px; text-decoration-thickness: 2px; }
+  .ct-d-clients { margin: 0; }
+  .ct-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+  .ct-chips li { font: 400 12px var(--ct-label); text-transform: uppercase; padding: 3px 8px; background: var(--ct-cream); border: 2px solid var(--ct-plum); line-height: 1.3; }
+
+  /* ---------------------------------------------------------------- dialog */
+  .ct-dialog {
+    width: min(640px, calc(100vw - 24px));
+    max-height: min(86vh, 820px);
+    padding: 0;
+    color: var(--ct-plum);
+    background: var(--ct-paper);
+    border: 3px solid var(--ct-plum);
+    box-shadow: 8px 8px 0 var(--ct-shadow);
+    font-family: var(--ct-body);
+  }
+  .ct-dialog::backdrop { background: rgba(43, 34, 53, 0.45); }
+  .ct-dlg-in { display: flex; flex-direction: column; max-height: inherit; }
+  .ct-dlg-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 18px 20px 14px; border-bottom: 3px solid var(--ct-plum); background: var(--ct-cream); }
+  .ct-dlg-head h2 { margin: 0; font: 600 clamp(24px, 3vw, 30px)/1.15 var(--ct-head); }
+  .ct-close { flex: none; }
+  .ct-dlg-body { padding: 4px 20px 22px; overflow: auto; }
+  .ct-dlg-body .ct-d-about { margin-top: 14px; }
+
+  /* ---------------------------------------------------------------- narrow screens: panel below the map */
+  @media (max-width: 899px) {
+    .ct-stage { height: clamp(280px, 46vh, 380px); }
+    .ct-bullets { overflow: visible; }
+    .ct-panel {
+      position: static;
+      width: auto;
+      max-height: none;
+      overflow: visible;
+      margin: 14px 0 0;
+      min-height: 300px;
+      box-shadow: 5px 5px 0 var(--ct-shadow);
+    }
+    .ct-where { margin-left: 0; width: 100%; justify-content: space-between; }
+  }
+  @media (max-width: 480px) {
+    .ct { padding: 0 12px; }
+    .ct-stage { height: 300px; box-shadow: 4px 4px 0 var(--ct-shadow); }
+    .ct-play { min-width: 0; flex: 1; }
+    .ct-transport { width: 100%; }
+    .ct-opts { width: 100%; justify-content: space-between; }
+    .ct-dots { gap: 3px; }
+    .ct-dot { width: 9px; height: 9px; }
+    .ct-sign-name { font-size: 11px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ct-panel.fade > * { animation: none !important; }
+    .ct-btn:active { transform: none; }
+  }
+</style>

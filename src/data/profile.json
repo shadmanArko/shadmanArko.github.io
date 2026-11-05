@@ -1,0 +1,1921 @@
+{
+  "meta": {
+    "name": "Shadman Arko",
+    "fullName": "Shadman Shahriar Hasan Arko",
+    "role": "Forward Deployed AI Engineer",
+    "headline": "I take AI from a business problem to production — and prove it in production at a real business.",
+    "location": "Berlin, Germany",
+    "status": "Berlin · German residence permit · English & Bengali native · German B1 · Open to AI/ML roles in Germany",
+    "email": "shadman.arko@gmail.com",
+    "phone": "+49 176 28921681",
+    "links": {
+      "linkedin": "https://www.linkedin.com/in/shadmanarko",
+      "github": "https://github.com/shadmanArko",
+      "huggingface": "https://huggingface.co/shadmanArko",
+      "site": "https://shadmanarko.github.io"
+    },
+    "avatar": "/avatar.png"
+  },
+  "proof": [
+    {
+      "value": "9 yrs",
+      "label": "shipping production software since 2018"
+    },
+    {
+      "value": "40+",
+      "label": "projects delivered — games, simulations, client systems, AI"
+    },
+    {
+      "value": "Millions",
+      "label": "of end users across the products I built and worked on"
+    },
+    {
+      "value": "7",
+      "label": "ML models retrained weekly and served in production today"
+    }
+  ],
+  "summary": [
+    "I spent eight years building real-time, data-driven software that millions of people use: live mobile games at Ubisoft's Kolibri Games, commercial PC titles on Steam, and VR training simulators used by the Bangladesh Army and Navy. I led teams of up to 12 and set up studios' engineering from zero.",
+    "Since 2026 I apply that engineering to AI. I work as the Forward Deployed AI Engineer at Dhaka Kacchi, a Berlin cloud kitchen, where I build and run its AI systems in production: an autonomous multi-agent marketing department, seven weekly-retrained ML models, a market-intelligence data platform, and live ML services anyone can try.",
+    "What I care about is the whole problem — understanding what a business actually needs, designing the right system, integrating it with what exists, deploying it, and measuring whether it worked."
+  ],
+  "loop": [
+    {
+      "step": "Problem",
+      "text": "Sit with the people who own the problem. Turn it into a measurable target.",
+      "evidence": "dienstpilot"
+    },
+    {
+      "step": "Data",
+      "text": "Find, collect and clean the data — often the hardest part.",
+      "evidence": "market-intelligence"
+    },
+    {
+      "step": "Solution",
+      "text": "Pick the simplest thing that works: rules, optimisation, classic ML, or agents.",
+      "evidence": "invoice-slm"
+    },
+    {
+      "step": "Engineering",
+      "text": "Contracts, tests, CI, ADRs. AI systems are software systems.",
+      "evidence": "dk-marketing"
+    },
+    {
+      "step": "Deployment",
+      "text": "Ship it behind real users, with guardrails and a human in the loop.",
+      "evidence": "dk-ml-services"
+    },
+    {
+      "step": "Impact",
+      "text": "Measure cost and quality together, then iterate.",
+      "evidence": "dk-marketing"
+    }
+  ],
+  "caseStudies": [
+    {
+      "slug": "dk-marketing",
+      "title": "An AI-native marketing department for a real business",
+      "client": "Dhaka Kacchi Berlin (cloud kitchen, my employer)",
+      "period": "Sep 2026 – present",
+      "flagship": true,
+      "oneLiner": "A multi-agent system plans, writes, designs, checks and schedules social content for 5 platforms. A human approves every post.",
+      "headlineMetric": {
+        "value": "−94%",
+        "label": "tokens per planning run (377k → 21k), quality flat"
+      },
+      "metrics": [
+        "Planning run cut from 377k to 21k tokens and 71 s to 35 s, with quality held flat on a frozen-input evaluation",
+        "≈24k tokens and 58 s from idea to rendered video per post",
+        "4 services, 3 MCP servers, 31 tools, per-role permissions enforced server-side",
+        "7 production ML models on a weekly train → judge → package → approve → serve cycle",
+        "RAG over 13.6k reviews, 459 own posts and 2.2k creator posts (median search 3.8 s)",
+        "1,200+ tests and 97% coverage in the publishing service; CI/CD with automatic rollback; 30+ ADRs",
+        "€0 extra running cost — no paid AI API"
+      ],
+      "stack": [
+        "Python",
+        "MCP",
+        "Claude",
+        "LangGraph",
+        "RAG",
+        "pgvector",
+        "MLflow",
+        "Dagster",
+        "Remotion",
+        "PostgreSQL",
+        "Docker",
+        "Telegram Bot API"
+      ],
+      "repos": [
+        "dk-intelligence",
+        "dk-publishing",
+        "dhaka_kacchi_ai_harness",
+        "dhaka-kacchi-reels"
+      ]
+    },
+    {
+      "slug": "dienstpilot",
+      "title": "DienstPilot — duty scheduling for German hospitals",
+      "client": "Co-designed with a physician",
+      "period": "Mar 2026 – present",
+      "flagship": true,
+      "oneLiner": "Constraint optimisation builds the roster, ML handles uncertain inputs, a Claude copilot explains plans. The AI proposes; the physician approves.",
+      "headlineMetric": {
+        "value": "0",
+        "label": "hard-rule violations on 12 held-out months (manual baseline: 5)"
+      },
+      "metrics": [
+        "Wishes granted up from 40% to 63%, overtime down 89%, burden spread down 19% vs a manual-planning baseline",
+        "CP-SAT optimiser and an independent rule validator agree on 71/71 historical months and 300/300 broken rosters",
+        "A 28-physician month solves in under 5 seconds",
+        "8 AI components with strict role separation — agents have no approve or publish tool",
+        "Designed for ArbZG working-time law, GDPR, §87 BetrVG and EU AI Act human oversight"
+      ],
+      "stack": [
+        "OR-Tools CP-SAT",
+        "FastAPI",
+        "PostgreSQL",
+        "pgvector",
+        "Redis",
+        "Next.js",
+        "Expo",
+        "Claude",
+        "MCP"
+      ],
+      "repos": [],
+      "note": "Synthetic five-year dataset of a fictional 28-physician department."
+    },
+    {
+      "slug": "invoice-slm",
+      "title": "Distilling a frontier model into 0.8B parameters",
+      "client": "GTC Berlin Builders Night (hackathon team)",
+      "period": "Oct 2026",
+      "flagship": true,
+      "oneLiner": "Can a model small enough for one GPU approve invoices as well as a frontier LLM?",
+      "headlineMetric": {
+        "value": "93%",
+        "label": "of the teacher's accuracy from a 0.8B model (41 → 90 / 100)"
+      },
+      "metrics": [
+        "Qwen3.5-0.8B fine-tuned with LoRA on 4,156 synthetic worked examples distilled from GLM 5.3",
+        "100% schema-valid JSON output",
+        "Error analysis: 9 of 10 misses were safe holds; all traced to arithmetic → compute totals in code",
+        "Langfuse tracing on every call; vLLM serving on Runpod with schema-constrained decoding"
+      ],
+      "stack": [
+        "Distil Labs",
+        "Qwen3.5",
+        "LoRA",
+        "vLLM",
+        "Langfuse",
+        "Runpod",
+        "uv",
+        "pytest"
+      ],
+      "repos": [
+        "rebel-alliance"
+      ]
+    },
+    {
+      "slug": "market-intelligence",
+      "title": "Market intelligence for every restaurant in Berlin",
+      "client": "Dhaka Kacchi Berlin",
+      "period": "Oct 2026 – present",
+      "flagship": false,
+      "oneLiner": "Delivery apps, maps, social media, census and weather data collected into one versioned, ML-ready Postgres warehouse.",
+      "headlineMetric": {
+        "value": "1.87M",
+        "label": "public social posts resolved to businesses"
+      },
+      "metrics": [
+        "13 sources incl. Wolt, Lieferando, Google Maps, OpenStreetMap, Overture, TikTok, Zensus 2022, DWD weather",
+        "raw → staging → core → marts → ml layers in dbt, with entity resolution, SCD2 history and schema-drift quarantine"
+      ],
+      "stack": [
+        "PostgreSQL",
+        "PostGIS",
+        "H3",
+        "dbt",
+        "DuckDB",
+        "Playwright"
+      ],
+      "repos": [
+        "MarketIntelligence-Data-Platform"
+      ]
+    },
+    {
+      "slug": "dk-ml-services",
+      "title": "Live ML services you can try",
+      "client": "Dhaka Kacchi Berlin",
+      "period": "Sep 2026",
+      "flagship": false,
+      "oneLiner": "A review-analysis API and a dish classifier, both deployed on AWS and public.",
+      "headlineMetric": {
+        "value": "Live",
+        "label": "public demos on AWS"
+      },
+      "metrics": [
+        "Aspect-based sentiment over 20k reviews from ~430 restaurants; Docker on AWS Lambda + API Gateway",
+        "ViT-Base dish classifier: linear probe then full fine-tune; FastAPI on AWS behind Nginx + TLS; model on Hugging Face"
+      ],
+      "stack": [
+        "Transformers",
+        "ViT",
+        "FastAPI",
+        "AWS Lambda",
+        "ECR",
+        "API Gateway",
+        "Nginx",
+        "Hugging Face Hub"
+      ],
+      "demos": [
+        {
+          "label": "Dish classifier",
+          "url": "https://classifier.dhakakacchi.com/"
+        },
+        {
+          "label": "Review intelligence",
+          "url": "https://reviews.dhakakacchi.com/"
+        }
+      ],
+      "repos": [
+        "dhaka-kacchi-dish-classifier",
+        "dhaka-kacchi-review-intelligence"
+      ]
+    },
+    {
+      "slug": "ml-pipeline",
+      "title": "A reusable ML engineering protocol for Claude Code",
+      "client": "Open source",
+      "period": "Aug – Sep 2026",
+      "flagship": false,
+      "oneLiner": "Six independently runnable stages — framing, data, split, modelling, deep learning, production — with validated hand-offs.",
+      "headlineMetric": {
+        "value": "6",
+        "label": "stages with machine-checked contracts"
+      },
+      "metrics": [
+        "Leakage audits, threshold provenance and an explicit deep-learning gate",
+        "NumPy bootstrap / Wilson / paired-difference confidence intervals, verified against scikit-learn"
+      ],
+      "stack": [
+        "Python",
+        "NumPy",
+        "Claude Code plugins"
+      ],
+      "repos": [
+        "ml-pipeline-skills"
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Dhaka Kacchi Berlin",
+      "role": "Forward Deployed AI Engineer",
+      "period": "Sep 2026 – present",
+      "location": "Berlin",
+      "summary": "A Berlin cloud kitchen that hired me to build its AI systems — a live production environment with real customers.",
+      "highlights": [
+        "Built the ordering backend for dhakakacchi.com: API, schema, order logic, admin auth",
+        "Built and run an autonomous multi-agent marketing department with human approval on every post",
+        "Operate 7 weekly-retrained ML models and a Berlin-wide market-intelligence warehouse"
+      ]
+    },
+    {
+      "company": "Bad Wifi Interactive",
+      "role": "Technical Solutions Consultant · previously Solutions Engineer",
+      "period": "Jan 2026 – present",
+      "location": "Berlin",
+      "summary": "PC game studio. I built the end-to-end development system and now consult on-call.",
+      "highlights": [
+        "Set up the studio's architecture, workflow and production standards from scratch",
+        "Built an MCP server connecting Claude Code to Unity, and AI agents around the team's workflow",
+        "Built CI/CD and release pipelines; shipped The Starfallen Prince on Steam"
+      ]
+    },
+    {
+      "company": "Kolibri Games (Ubisoft Mobile)",
+      "role": "Senior Software Engineer · 1-year contract",
+      "period": "Jan 2025 – Dec 2025",
+      "location": "Berlin",
+      "summary": "Idle Miner Tycoon — a live mobile game played by millions.",
+      "highlights": [
+        "Migrated legacy game code and backend integration onto the new architecture",
+        "Introduced an AI knowledge layer over the codebase that predicts which features a change will affect",
+        "Made systems configuration-driven so designers and PMs ship content without developers",
+        "Set up the A/B testing platform for data-driven product decisions"
+      ]
+    },
+    {
+      "company": "Red Thorn Interactive",
+      "role": "Founding Engineer → Lead Developer",
+      "period": "Oct 2022 – Dec 2024",
+      "location": "Dhaka",
+      "summary": "PC game startup.",
+      "highlights": [
+        "Built the studio's pipeline, team structure and engineering standards from zero; led a team of 12",
+        "Architected and shipped AlexanderBall: A Countryball Tale — the studio's commercial success, 93% positive on Steam",
+        "Architected Museum Keeper (Godot + ASP.NET Core) and Founders (DI, reactive, parallel systems)"
+      ]
+    },
+    {
+      "company": "Brain Station 23",
+      "role": "Software Engineer",
+      "period": "Aug 2021 – Oct 2022",
+      "location": "Dhaka",
+      "summary": "One of Bangladesh's largest software companies (~1,000 engineers).",
+      "highlights": [
+        "Delivered 10+ client projects end to end, from requirements to release, for clients incl. Achievr (Australia)",
+        "Unity/C#, Unreal/C++, JS/TS, .NET (nopCommerce) and Python ML — whatever each client needed"
+      ]
+    },
+    {
+      "company": "Bangladesh Army",
+      "role": "Software Engineer (VR/AR)",
+      "period": "Aug 2020 – Jul 2021",
+      "location": "Dhaka",
+      "summary": "Military training simulation.",
+      "highlights": [
+        "Led the SAFS small-arms firing simulator, used by the Bangladesh Army and Navy: 16 simultaneous trainees, 9 scenarios, haptic suits, Photon multiplayer",
+        "Built a radio communication simulator replicating real military radios"
+      ]
+    },
+    {
+      "company": "Dreamerz Lab",
+      "role": "Junior Game Developer (VR/AR)",
+      "period": "Jul 2019 – Jul 2020",
+      "location": "Dhaka",
+      "highlights": [
+        "Shipped AR and mobile apps to Google Play, including AutoLab and Kothin Shobdo"
+      ]
+    },
+    {
+      "company": "Kovair Software",
+      "role": "Software Engineer Intern (scholarship)",
+      "period": "Jan 2019 – Jun 2019",
+      "location": "Dhaka",
+      "highlights": [
+        "Won the place through a competitive exam; learned requirements gathering and solution design with real customers"
+      ]
+    },
+    {
+      "company": "CVIS Lab, BRAC University",
+      "role": "Working Student — computer vision, VR/AR",
+      "period": "Jan 2018 – Dec 2019",
+      "location": "Dhaka",
+      "highlights": [
+        "Research in computer vision and XR; NASA Space Apps 2019 global top 10 with Project L.I.F.E."
+      ]
+    }
+  ],
+  "foundation": [
+    {
+      "title": "Idle Miner Tycoon",
+      "org": "Kolibri Games / Ubisoft",
+      "year": "2025",
+      "kind": "Live mobile game",
+      "fact": "Played by millions",
+      "url": "https://play.google.com/store/apps/details?id=com.kolibrigames.idleminertycoon"
+    },
+    {
+      "title": "AlexanderBall: A Countryball Tale",
+      "org": "Red Thorn Interactive",
+      "year": "2022–24",
+      "kind": "PC strategy",
+      "fact": "93% positive on Steam",
+      "url": "https://store.steampowered.com/app/2379780/"
+    },
+    {
+      "title": "The Starfallen Prince",
+      "org": "Bad Wifi Interactive",
+      "year": "2026",
+      "kind": "PC roguelite",
+      "fact": "Released on Steam",
+      "url": "https://store.steampowered.com/app/4221840/"
+    },
+    {
+      "title": "SAFS firing simulator",
+      "org": "Bangladesh Army",
+      "year": "2021",
+      "kind": "Military VR training",
+      "fact": "Used by Army and Navy",
+      "url": null
+    }
+  ],
+  "archive": [
+    {
+      "title": "Museum Keeper",
+      "org": "Red Thorn Interactive",
+      "year": "2024",
+      "tags": [
+        "games"
+      ],
+      "url": "https://store.steampowered.com/app/2708780/"
+    },
+    {
+      "title": "Founders",
+      "org": "Red Thorn Interactive",
+      "year": "2023–24",
+      "tags": [
+        "games"
+      ],
+      "url": "https://github.com/shadmanArko/Founders"
+    },
+    {
+      "title": "Silent Scream",
+      "org": "Brain Station 23",
+      "year": "2022",
+      "tags": [
+        "games"
+      ],
+      "url": "https://store.steampowered.com/app/1765850/"
+    },
+    {
+      "title": "Fire Awareness VR Trainer",
+      "org": "Brain Station 23 for Achievr (AU)",
+      "year": "2021",
+      "tags": [
+        "xr",
+        "client"
+      ],
+      "url": null
+    },
+    {
+      "title": "NOX Eternus",
+      "org": "Brain Station 23",
+      "year": "2021–22",
+      "tags": [
+        "games",
+        "client"
+      ],
+      "url": "https://play.google.com/store/apps/details?id=com.ictgames.noxeterners"
+    },
+    {
+      "title": "Westwood Manor",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games"
+      ],
+      "url": "https://brainstation23.itch.io/westwood-manor"
+    },
+    {
+      "title": "Dungeon Run",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games"
+      ],
+      "url": "https://brainstation23.itch.io/dungeonrun"
+    },
+    {
+      "title": "Learning Architecture",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games",
+        "client"
+      ],
+      "url": null
+    },
+    {
+      "title": "Learning Geography",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games",
+        "client"
+      ],
+      "url": null
+    },
+    {
+      "title": "Radio Communication Simulator",
+      "org": "Bangladesh Army",
+      "year": "2021",
+      "tags": [
+        "xr"
+      ],
+      "url": null
+    },
+    {
+      "title": "Kothin Shobdo",
+      "org": "Dreamerz Lab",
+      "year": "2020",
+      "tags": [
+        "games"
+      ],
+      "url": null
+    },
+    {
+      "title": "The Skipper",
+      "org": "Dreamerz Lab",
+      "year": "2020",
+      "tags": [
+        "games"
+      ],
+      "url": null
+    },
+    {
+      "title": "AutoLab (AR)",
+      "org": "Dreamerz Lab",
+      "year": "2019",
+      "tags": [
+        "xr"
+      ],
+      "url": "https://play.google.com/store/apps/details?id=com.dreamerzlab.autolab"
+    },
+    {
+      "title": "Project L.I.F.E. — NASA Space Apps top 10",
+      "org": "CVIS Lab",
+      "year": "2019",
+      "tags": [
+        "xr"
+      ],
+      "url": null
+    },
+    {
+      "title": "Vorkoster — personalised glucose prediction",
+      "org": "With a Berlin physician",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "url": null
+    },
+    {
+      "title": "dk-dbt — analytics engineering",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "url": "https://github.com/shadmanArko/dk-dbt"
+    },
+    {
+      "title": "Home Credit default risk",
+      "org": "neue fische",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "url": "https://github.com/shadmanArko/home-credit-default-risk"
+    }
+  ],
+  "research": {
+    "title": "Real world objects augmentation in virtual 3D environment — RealSense SDK, Deep Learning and Game Engine",
+    "venue": "IEEE Asia-Pacific Conference on Computer Science and Data Engineering (CSDE), Brisbane",
+    "year": "2021",
+    "role": "First author",
+    "url": "https://doi.org/10.1109/CSDE53843.2021.9718388"
+  },
+  "quotes": [
+    {
+      "text": "He pairs strong coding skills with a practical, product-focused mindset, turning complex AI concepts into reliable, working software.",
+      "name": "Rhythm Bhatia",
+      "relation": "Teacher, neue fische · PhD in EdTech + ML"
+    },
+    {
+      "text": "He was the leader of the SAFS project team… exceptionally approachable and supportive.",
+      "name": "Md Mazharul Islam Antor",
+      "relation": "Reported to Shadman"
+    },
+    {
+      "text": "A capable Unity developer who approaches problems with persistence and determination… especially valuable in a live production environment where unexpected problems often arise.",
+      "name": "Jisan Haider Joy",
+      "relation": "Kolibri Games colleague"
+    },
+    {
+      "text": "A caring and charismatic team leader who took the time to check up on his team members individually.",
+      "name": "Sajid Shahnawaz",
+      "relation": "Reported to Shadman"
+    }
+  ],
+  "education": [
+    {
+      "title": "AI Engineering — Data Science & ML Engineering",
+      "org": "neue fische / SPICED Academy, Berlin",
+      "period": "Jun 2026 – Feb 2027"
+    },
+    {
+      "title": "B.Sc. Computer Science",
+      "org": "BRAC University, Dhaka",
+      "period": "2016 – 2020"
+    }
+  ],
+  "certifications": [
+    {
+      "title": "Agentic AI Builder",
+      "org": "Nebius Academy",
+      "year": "2026"
+    },
+    {
+      "title": "NASA Space Apps Challenge — global top 10",
+      "org": "NASA",
+      "year": "2019"
+    },
+    {
+      "title": "Game Development for Modern Platforms",
+      "org": "Michigan State University",
+      "year": "2020"
+    }
+  ],
+  "skills": {
+    "AI & LLM": [
+      "Agents & multi-agent orchestration",
+      "MCP",
+      "RAG",
+      "Evaluation harnesses",
+      "Distillation & LoRA",
+      "Guardrails",
+      "Cost/latency optimisation"
+    ],
+    "ML & Data": [
+      "scikit-learn",
+      "PyTorch / Transformers",
+      "Optimisation (CP-SAT)",
+      "SQL",
+      "dbt",
+      "pandas / Polars / DuckDB",
+      "MLflow"
+    ],
+    "Engineering": [
+      "Python",
+      "C#",
+      "TypeScript",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "CI/CD",
+      "Unity"
+    ],
+    "Working with people": [
+      "Discovery & requirements",
+      "Scoping & POCs",
+      "Team leadership (up to 12)",
+      "Explaining systems to non-engineers"
+    ]
+  },
+  "stations": [
+    {
+      "id": "brac",
+      "kind": "education",
+      "name": "BRAC University",
+      "city": "Dhaka",
+      "period": "2016 – 2020",
+      "role": "B.Sc. Computer Science",
+      "overview": "Where it started: computer science, Python, robotics and IoT.",
+      "about": "One of Bangladesh's leading private universities, in Dhaka.",
+      "narration": [
+        "I studied Computer Science at BRAC University in Dhaka.",
+        "I started with Python — web and backend development — then moved into robotics and IoT with Raspberry Pi.",
+        "Alongside my degree I joined the university's computer-vision research lab, which pulled me into VR and AR."
+      ],
+      "did": [
+        "B.Sc. in Computer Science",
+        "Python web and backend development, robotics and IoT projects",
+        "Raspberry Pi project write-up at BRAC University",
+        "Presentation and poster awards (2017)"
+      ],
+      "projects": [],
+      "clients": [],
+      "stack": [
+        "Python",
+        "C",
+        "C++",
+        "Java",
+        "Raspberry Pi"
+      ]
+    },
+    {
+      "id": "cvis",
+      "kind": "work",
+      "name": "CVIS Lab, BRAC University",
+      "city": "Dhaka",
+      "period": "Jan 2018 – Dec 2019",
+      "role": "Working Student — computer vision, VR/AR",
+      "overview": "Research lab for computer vision and image processing; my first VR/AR work.",
+      "about": "The computer vision and image research lab at BRAC University.",
+      "narration": [
+        "My first real engineering job was as a working student in the CVIS research lab.",
+        "I worked on computer vision, VR and AR — and learned that I love turning research into things people can use.",
+        "Our VR Mars-survival game reached the global top 10 at NASA Space Apps 2019.",
+        "That research later became my first-author IEEE paper on deep learning and game engines."
+      ],
+      "did": [
+        "Computer vision and XR research",
+        "Built Project L.I.F.E., a VR survival game — NASA Space Apps 2019 global top 10",
+        "Research that became an IEEE CSDE 2021 first-author paper (deep learning + RealSense + game engine)",
+        "Completed the lab's game-development and VR/AR training programmes"
+      ],
+      "projects": [
+        "project-life",
+        "ieee-paper"
+      ],
+      "clients": [],
+      "stack": [
+        "Unity",
+        "C#",
+        "Intel RealSense",
+        "Deep learning",
+        "VR"
+      ]
+    },
+    {
+      "id": "kovair",
+      "kind": "work",
+      "name": "Kovair Software",
+      "city": "Dhaka",
+      "period": "Jan 2019 – Jun 2019",
+      "role": "Software Engineer Intern (scholarship)",
+      "overview": "Internship won through a competitive exam; product and requirements work on Kovair's ALM tooling.",
+      "about": "A software-delivery company making application lifecycle management (Kovair ALM) and tool-integration products (Omnibus).",
+      "narration": [
+        "I won a scholarship internship at Kovair Software through a competitive exam.",
+        "Kovair builds application lifecycle management and integration tools — software that other software teams use to plan and ship.",
+        "Here I learned to start from the customer: gather requirements, understand the real problem, then design the best solution.",
+        "That habit is the root of how I work as a forward deployed engineer today."
+      ],
+      "did": [
+        "Selected through a competitive exam, with a scholarship",
+        "Worked with Kovair's own ALM / project-management tooling",
+        "Learned project management, requirements gathering and solution design with real customers"
+      ],
+      "projects": [],
+      "clients": [],
+      "stack": [
+        "Kovair ALM",
+        "Requirements engineering",
+        "Project management"
+      ]
+    },
+    {
+      "id": "dreamerz",
+      "kind": "work",
+      "name": "Dreamerz Lab",
+      "city": "Dhaka",
+      "period": "Jul 2019 – Jul 2020",
+      "role": "Junior Game Developer (VR/AR)",
+      "overview": "VR/AR solutions and mobile games for telecom, automotive and architecture clients.",
+      "about": "A Dhaka studio building VR/AR solutions, mobile games and apps for businesses.",
+      "narration": [
+        "At Dreamerz Lab I built VR and AR solutions for real businesses.",
+        "Our clients included large telecom companies, Executive Motors and other car businesses, and architecture firms.",
+        "I also shipped mobile games and AR apps to Google Play — AutoLab, Kothin Shobdo and The Skipper."
+      ],
+      "did": [
+        "VR/AR solutions for telecommunication, automotive (Executive Motors) and architecture clients",
+        "Shipped AR and mobile games to Google Play",
+        "Android and iOS app development in Unity"
+      ],
+      "projects": [
+        "autolab",
+        "kothin-shobdo",
+        "the-skipper"
+      ],
+      "clients": [
+        "Telecom companies in Bangladesh",
+        "Executive Motors",
+        "Car businesses",
+        "Architecture firms"
+      ],
+      "stack": [
+        "Unity",
+        "C#",
+        "ARCore",
+        "ARKit",
+        "Android",
+        "iOS"
+      ]
+    },
+    {
+      "id": "army",
+      "kind": "work",
+      "name": "Bangladesh Army",
+      "city": "Dhaka",
+      "period": "Aug 2020 – Jul 2021",
+      "role": "Software Engineer (VR/AR)",
+      "overview": "Led SAFS, a VR firing simulator used by the Bangladesh Army and Navy.",
+      "about": "Military training simulation software for Bangladesh's armed forces.",
+      "narration": [
+        "I led the team that built SAFS, a small-arms firing simulator for military training.",
+        "Sixteen trainees can train at once across nine scenarios, with haptic suits and real weapon controllers.",
+        "It is used by both the Bangladesh Army and Navy.",
+        "I also built a radio-communication simulator that replicates real military radios."
+      ],
+      "did": [
+        "Team lead of SAFS: 16 simultaneous trainees, 9 scenarios, multiplayer over Photon",
+        "Integrated HTC Vive Pro, Meta Quest 2 and bHaptics suits",
+        "Worked directly with military personnel to turn training needs into software",
+        "Built a 3D radio communication simulator"
+      ],
+      "projects": [
+        "safs",
+        "radio-sim"
+      ],
+      "clients": [
+        "Bangladesh Army",
+        "Bangladesh Navy"
+      ],
+      "stack": [
+        "Unity",
+        "C#",
+        "Photon",
+        "HTC Vive Pro",
+        "Meta Quest 2",
+        "bHaptics"
+      ]
+    },
+    {
+      "id": "bs23",
+      "kind": "work",
+      "name": "Brain Station 23",
+      "city": "Dhaka",
+      "period": "Aug 2021 – Oct 2022",
+      "role": "Software Engineer",
+      "overview": "10+ client projects across games, VR, e-commerce, apps and ML at a 1,000-engineer company.",
+      "about": "One of Bangladesh's largest software companies (~1,000 engineers), building for international clients.",
+      "narration": [
+        "At Brain Station 23 I delivered more than ten client projects, end to end.",
+        "Each client needed a different stack — Unity, Unreal, .NET e-commerce, Flutter apps, web, even Python ML — so I learned to pick up whatever the problem needed.",
+        "Highlights: a fire-safety VR trainer for Achievr in Australia, and the horror game Silent Scream on Steam."
+      ],
+      "did": [
+        "Delivered 10+ B2B and B2C client projects from requirements to release",
+        "Lead Unity developer on the Fire Awareness VR trainer for Achievr (Australia)",
+        "E-commerce with nopCommerce (.NET), apps with Flutter, web with Vue and Three.js, ML with Python",
+        "Some client work is under NDA and not listed"
+      ],
+      "projects": [
+        "fire-vr",
+        "silent-scream",
+        "nox-eternus",
+        "westwood-manor",
+        "dungeon-run",
+        "learning-architecture",
+        "learning-geography"
+      ],
+      "clients": [
+        "Achievr (Australia)",
+        "International B2B and B2C clients"
+      ],
+      "stack": [
+        "Unity",
+        "Unreal",
+        "C#",
+        "C++",
+        ".NET",
+        "nopCommerce",
+        "Flutter",
+        "Vue",
+        "Three.js",
+        "Python"
+      ]
+    },
+    {
+      "id": "redthorn",
+      "kind": "work",
+      "name": "Red Thorn Interactive",
+      "city": "Dhaka",
+      "period": "Oct 2022 – Dec 2024",
+      "role": "Founding Engineer → Lead Developer",
+      "overview": "Founding engineer of a PC game studio; led 12 people; shipped AlexanderBall on Steam.",
+      "about": "An independent PC game studio.",
+      "narration": [
+        "I joined Red Thorn as its founding engineer and built the studio's engineering from zero: pipeline, team structure, standards.",
+        "I grew and led a cross-functional team of twelve.",
+        "Our game AlexanderBall: A Countryball Tale became the studio's commercial success, with 93% positive reviews on Steam.",
+        "I also architected Museum Keeper and Founders."
+      ],
+      "did": [
+        "Built the development pipeline, CI and engineering standards from scratch",
+        "Led a team of 12: programmers, artists, designers and sound",
+        "Architected AlexanderBall (Unity), Museum Keeper (Godot + ASP.NET Core) and Founders (DI, reactive, parallel systems)",
+        "Mentored junior developers"
+      ],
+      "projects": [
+        "alexanderball",
+        "museum-keeper",
+        "founders"
+      ],
+      "clients": [],
+      "stack": [
+        "Unity",
+        "Godot",
+        "C#",
+        "GDScript",
+        "ASP.NET Core",
+        "Zenject",
+        "UniRx",
+        "UniTask",
+        "Jenkins"
+      ]
+    },
+    {
+      "id": "kolibri",
+      "kind": "work",
+      "name": "Kolibri Games (Ubisoft Mobile)",
+      "city": "Berlin",
+      "period": "Jan 2025 – Dec 2025",
+      "role": "Senior Software Engineer · 1-year contract",
+      "overview": "Idle Miner Tycoon: legacy migration, AI in the workflow, A/B testing platform.",
+      "about": "Ubisoft's Berlin mobile studio, maker of Idle Miner Tycoon — a live game played by millions.",
+      "narration": [
+        "I moved to Berlin and joined Kolibri Games, part of Ubisoft, on a one-year contract.",
+        "My job was to bring Idle Miner Tycoon's legacy code and backend integration onto the new architecture.",
+        "I introduced AI into the engineering workflow: a knowledge layer over the codebase that predicts which features a change will affect.",
+        "I made systems configuration-driven so designers could ship without developers, and set up the A/B testing platform."
+      ],
+      "did": [
+        "Migrated legacy code and backend integration to the new architecture",
+        "Built an AI knowledge layer over the codebase for impact analysis",
+        "Configuration-driven systems that reduce developer dependency",
+        "Set up the A/B testing platform",
+        "Shipped gameplay and LiveOps features"
+      ],
+      "projects": [
+        "idle-miner-tycoon",
+        "kolibri-ai-layer"
+      ],
+      "clients": [],
+      "stack": [
+        "Unity",
+        "C#",
+        "Backend integration",
+        "A/B testing",
+        "AI tooling"
+      ]
+    },
+    {
+      "id": "badwifi",
+      "kind": "work",
+      "name": "Bad Wifi Interactive",
+      "city": "Berlin",
+      "period": "Jan 2026 – present",
+      "role": "Technical Solutions Consultant · previously Solutions Engineer",
+      "overview": "Built the studio's end-to-end development system and AI tooling; shipped The Starfallen Prince.",
+      "about": "A Berlin PC game studio.",
+      "narration": [
+        "At Bad Wifi I started as Solutions Engineer and built the studio's end-to-end development system.",
+        "I connected Claude Code to Unity with an MCP server and designed AI agents around the team's workflow.",
+        "I built the CI/CD and release pipelines, and we shipped The Starfallen Prince on Steam.",
+        "Now I consult on-call as Technical Solutions Consultant."
+      ],
+      "did": [
+        "Architecture, workflow and production standards from scratch",
+        "MCP server connecting Claude Code to Unity; AI agents for the team",
+        "CI/CD and automated release pipelines",
+        "Proofs of concept, demos and scoped implementations"
+      ],
+      "projects": [
+        "starfallen-prince",
+        "unity-mcp"
+      ],
+      "clients": [],
+      "stack": [
+        "Unity",
+        "C#",
+        "MCP",
+        "Claude Code",
+        "CI/CD"
+      ]
+    },
+    {
+      "id": "neuefische",
+      "kind": "education",
+      "name": "neue fische / SPICED Academy",
+      "city": "Berlin",
+      "period": "Jun 2026 – Feb 2027",
+      "role": "AI Engineering — Data Science & ML Engineering",
+      "overview": "Full-time AI engineering programme: data science, ML, MLOps, LLMs and agents.",
+      "about": "A Berlin school for data science, AI and software engineering.",
+      "narration": [
+        "To go deep on AI, I joined neue fische's AI Engineering programme in Berlin.",
+        "Statistics, machine learning, deep learning, MLOps, LLMs and agents — with real projects every week.",
+        "My capstone was the AI-native marketing department I built for Dhaka Kacchi, the Berlin cloud kitchen where I work."
+      ],
+      "did": [
+        "Data science, ML engineering and MLOps",
+        "Projects: credit-default risk, data pipelines with dbt, testing, refactoring",
+        "Capstone: an AI-native autonomous marketing department"
+      ],
+      "projects": [
+        "home-credit",
+        "data-sql",
+        "dk-marketing"
+      ],
+      "clients": [],
+      "stack": [
+        "Python",
+        "scikit-learn",
+        "PyTorch",
+        "SQL",
+        "dbt",
+        "Docker",
+        "FastAPI"
+      ]
+    },
+    {
+      "id": "dhakakacchi",
+      "kind": "work",
+      "name": "Dhaka Kacchi Berlin",
+      "city": "Berlin",
+      "period": "Sep 2026 – present",
+      "role": "Forward Deployed AI Engineer",
+      "overview": "The Berlin cloud kitchen where I work as Forward Deployed AI Engineer — AI in real production.",
+      "about": "A kacchi biryani cloud kitchen in Berlin. I was hired as its Forward Deployed AI Engineer to automate and improve its operations with AI.",
+      "narration": [
+        "Today I work at Dhaka Kacchi, a cloud kitchen in Berlin, as its Forward Deployed AI Engineer.",
+        "My job is to take the business's real problems — marketing, orders, market research — and solve them with AI in production.",
+        "Seven ML models retrain every week. A multi-agent system plans and writes the social content, and a human approves every post.",
+        "I cut that system's cost by 94% while keeping quality flat.",
+        "This is the work I love: from a real problem to production to measured impact."
+      ],
+      "did": [
+        "Hired as Forward Deployed AI Engineer to automate the business's operations beyond cooking",
+        "Ordering backend for dhakakacchi.com",
+        "Autonomous multi-agent marketing department with human approval",
+        "7 weekly-retrained ML models; RAG over reviews and posts",
+        "Market-intelligence warehouse covering every Berlin restaurant",
+        "Live ML demos on AWS"
+      ],
+      "projects": [
+        "dk-marketing",
+        "market-intelligence",
+        "dk-ml-services",
+        "ordering-platform",
+        "dk-dbt"
+      ],
+      "clients": [],
+      "stack": [
+        "Python",
+        "MCP",
+        "Claude",
+        "LangGraph",
+        "RAG",
+        "MLflow",
+        "PostgreSQL",
+        "AWS",
+        "Docker"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "dk-marketing",
+      "title": "AI-native marketing department",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "caseStudy": "dk-marketing",
+      "summary": "Multi-agent system that plans, writes, designs and schedules social posts for 5 platforms; a human approves every post. −94% tokens per planning run."
+    },
+    {
+      "id": "dienstpilot",
+      "title": "DienstPilot — hospital duty scheduling",
+      "org": "With a physician",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "caseStudy": "dienstpilot",
+      "summary": "CP-SAT roster optimiser, ML and a Claude copilot. 0 hard-rule violations on 12 held-out months."
+    },
+    {
+      "id": "invoice-slm",
+      "title": "Invoice approval model (0.8B)",
+      "org": "GTC Berlin Builders Night",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "caseStudy": "invoice-slm",
+      "summary": "Distilled a frontier model into Qwen3.5-0.8B: 41 → 90/100, 93% of the teacher."
+    },
+    {
+      "id": "market-intelligence",
+      "title": "Market intelligence platform",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "caseStudy": "market-intelligence",
+      "summary": "Every Berlin restaurant from 13 sources into an ML-ready Postgres warehouse; 1.87M posts."
+    },
+    {
+      "id": "dk-ml-services",
+      "title": "Live ML services: reviews + dish classifier",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "caseStudy": "dk-ml-services",
+      "summary": "Aspect-based review sentiment on AWS Lambda and a ViT dish classifier — both live."
+    },
+    {
+      "id": "ml-pipeline",
+      "title": "ML engineering protocol for Claude Code",
+      "org": "Open source",
+      "year": "2026",
+      "tags": [
+        "ai"
+      ],
+      "caseStudy": "ml-pipeline",
+      "summary": "Six-stage ML methodology with machine-checked hand-offs and confidence-interval tooling."
+    },
+    {
+      "id": "vorkoster",
+      "title": "Vorkoster — personalised glucose prediction",
+      "org": "With a Berlin physician",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "health"
+      ],
+      "summary": "Privacy-first agentic AI that predicts glucose from real sensor data, with deterministic guardrails and GDPR-aware design."
+    },
+    {
+      "id": "ordering-platform",
+      "title": "dhakakacchi.com ordering platform",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "web"
+      ],
+      "summary": "Backend for online ordering: API design, schema, order logic, admin auth.",
+      "links": [
+        {
+          "label": "dhakakacchi.com",
+          "url": "https://dhakakacchi.com"
+        }
+      ]
+    },
+    {
+      "id": "dk-dbt",
+      "title": "Restaurant analytics with dbt + DuckDB",
+      "org": "Dhaka Kacchi Berlin",
+      "year": "2026",
+      "tags": [
+        "data"
+      ],
+      "summary": "Two messy source systems into tested facts and marts: margins per dish, churn and win-back lists.",
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/shadmanArko/dk-dbt"
+        }
+      ]
+    },
+    {
+      "id": "home-credit",
+      "title": "Home Credit default risk",
+      "org": "neue fische",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "summary": "Credit-default models with formal problem framing, baselines and business-driven threshold selection.",
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/shadmanArko/home-credit-default-risk"
+        }
+      ]
+    },
+    {
+      "id": "data-sql",
+      "title": "Health screening EDA & housing analysis",
+      "org": "neue fische",
+      "year": "2026",
+      "tags": [
+        "data"
+      ],
+      "summary": "Exploratory analysis of a four-table health dataset; King County housing analysis with SQL window functions."
+    },
+    {
+      "id": "unity-mcp",
+      "title": "Claude Code ↔ Unity MCP server",
+      "org": "Bad Wifi Interactive",
+      "year": "2026",
+      "tags": [
+        "ai",
+        "games"
+      ],
+      "summary": "An MCP server that lets Claude Code work inside the Unity editor, plus agents around the team's workflow."
+    },
+    {
+      "id": "kolibri-ai-layer",
+      "title": "AI knowledge layer for a live game codebase",
+      "org": "Kolibri Games",
+      "year": "2025",
+      "tags": [
+        "ai",
+        "games"
+      ],
+      "summary": "Lets AI tools understand the codebase and flags which features a change will affect."
+    },
+    {
+      "id": "starfallen-prince",
+      "title": "The Starfallen Prince",
+      "org": "Bad Wifi Interactive",
+      "year": "2026",
+      "tags": [
+        "games"
+      ],
+      "summary": "Bullet-heaven roguelite set in a feudal sci-fi world. Lead developer, systems and CI/CD.",
+      "links": [
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/4221840/"
+        }
+      ]
+    },
+    {
+      "id": "idle-miner-tycoon",
+      "title": "Idle Miner Tycoon",
+      "org": "Kolibri Games (Ubisoft)",
+      "year": "2025",
+      "tags": [
+        "games",
+        "mobile"
+      ],
+      "summary": "Live mobile game played by millions: legacy migration, LiveOps features, A/B testing.",
+      "links": [
+        {
+          "label": "Google Play",
+          "url": "https://play.google.com/store/apps/details?id=com.kolibrigames.idleminertycoon"
+        }
+      ]
+    },
+    {
+      "id": "museum-keeper",
+      "title": "Museum Keeper",
+      "org": "Red Thorn Interactive",
+      "year": "2024",
+      "tags": [
+        "games"
+      ],
+      "summary": "Museum management sim, in development. Lead developer; Godot + ASP.NET Core backend.",
+      "links": [
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/2708780/"
+        }
+      ]
+    },
+    {
+      "id": "founders",
+      "title": "Founders",
+      "org": "Red Thorn Interactive",
+      "year": "2023–24",
+      "tags": [
+        "games"
+      ],
+      "summary": "Civilization-inspired play-pause RPG built with dependency injection, reactive and parallel systems.",
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/shadmanArko/Founders"
+        }
+      ]
+    },
+    {
+      "id": "alexanderball",
+      "title": "AlexanderBall: A Countryball Tale",
+      "org": "Red Thorn Interactive",
+      "year": "2022–24",
+      "tags": [
+        "games"
+      ],
+      "summary": "Historical strategy with Countryball humour; the studio's commercial success, 93% positive on Steam.",
+      "links": [
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/2379780/"
+        }
+      ]
+    },
+    {
+      "id": "silent-scream",
+      "title": "Silent Scream",
+      "org": "Brain Station 23",
+      "year": "2022",
+      "tags": [
+        "games",
+        "client"
+      ],
+      "summary": "Horror game on Steam; core gameplay systems and mechanics.",
+      "links": [
+        {
+          "label": "Steam",
+          "url": "https://store.steampowered.com/app/1765850/"
+        }
+      ]
+    },
+    {
+      "id": "mine-sweeper",
+      "title": "Mine Sweeper",
+      "org": "Personal",
+      "year": "2022",
+      "tags": [
+        "games"
+      ],
+      "summary": "Classic Minesweeper in Unity: grid logic, input handling and game state.",
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/shadmanArko/MineSweeper_Unity"
+        }
+      ]
+    },
+    {
+      "id": "nox-eternus",
+      "title": "NOX Eternus",
+      "org": "Brain Station 23",
+      "year": "2021–22",
+      "tags": [
+        "games",
+        "mobile",
+        "client"
+      ],
+      "summary": "Narrative strategy game on Google Play.",
+      "links": [
+        {
+          "label": "Google Play",
+          "url": "https://play.google.com/store/apps/details?id=com.ictgames.noxeterners"
+        }
+      ]
+    },
+    {
+      "id": "learning-architecture",
+      "title": "Learning Architecture",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games",
+        "mobile",
+        "client"
+      ],
+      "summary": "2D educational game on Google Play about building and structural principles."
+    },
+    {
+      "id": "learning-geography",
+      "title": "Learning Geography",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games",
+        "client"
+      ],
+      "summary": "3D educational game exploring Bangladesh's key infrastructure and landmarks."
+    },
+    {
+      "id": "westwood-manor",
+      "title": "Westwood Manor",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games"
+      ],
+      "summary": "HDRP horror-puzzle game; interactive elements and mechanics.",
+      "links": [
+        {
+          "label": "itch.io",
+          "url": "https://brainstation23.itch.io/westwood-manor"
+        }
+      ]
+    },
+    {
+      "id": "dungeon-run",
+      "title": "Dungeon Run",
+      "org": "Brain Station 23",
+      "year": "2021",
+      "tags": [
+        "games"
+      ],
+      "summary": "Arcade runner through procedurally generated dungeons.",
+      "links": [
+        {
+          "label": "itch.io",
+          "url": "https://brainstation23.itch.io/dungeonrun"
+        }
+      ]
+    },
+    {
+      "id": "fire-vr",
+      "title": "Fire Awareness VR Trainer",
+      "org": "Brain Station 23 for Achievr (Australia)",
+      "year": "2021",
+      "tags": [
+        "xr",
+        "client"
+      ],
+      "summary": "Lead Unity developer of a Meta Quest 2 fire-safety training simulator."
+    },
+    {
+      "id": "safs",
+      "title": "SAFS — Small Arms Firing Simulator",
+      "org": "Bangladesh Army",
+      "year": "2021",
+      "tags": [
+        "xr",
+        "client"
+      ],
+      "summary": "Team lead. Multiplayer VR firing simulator used by the Bangladesh Army and Navy: 16 trainees, 9 scenarios, haptics."
+    },
+    {
+      "id": "radio-sim",
+      "title": "Radio Communication Simulator",
+      "org": "Bangladesh Army",
+      "year": "2021",
+      "tags": [
+        "xr",
+        "client"
+      ],
+      "summary": "Interactive 3D replica of military radios and their operating procedures."
+    },
+    {
+      "id": "kothin-shobdo",
+      "title": "Kothin Shobdo",
+      "org": "Dreamerz Lab",
+      "year": "2020",
+      "tags": [
+        "games",
+        "mobile"
+      ],
+      "summary": "Bengali vocabulary word-puzzle game on Google Play."
+    },
+    {
+      "id": "the-skipper",
+      "title": "The Skipper",
+      "org": "Dreamerz Lab",
+      "year": "2020",
+      "tags": [
+        "games"
+      ],
+      "summary": "Retro 2D platformer; core gameplay mechanics."
+    },
+    {
+      "id": "autolab",
+      "title": "AutoLab",
+      "org": "Dreamerz Lab",
+      "year": "2019",
+      "tags": [
+        "xr",
+        "mobile"
+      ],
+      "summary": "AR app blending real-world interaction with gameplay.",
+      "links": [
+        {
+          "label": "Google Play",
+          "url": "https://play.google.com/store/apps/details?id=com.dreamerzlab.autolab"
+        }
+      ]
+    },
+    {
+      "id": "project-life",
+      "title": "Project L.I.F.E.",
+      "org": "CVIS Lab, BRAC University",
+      "year": "2019",
+      "tags": [
+        "xr",
+        "research"
+      ],
+      "summary": "VR Mars-survival game; NASA Space Apps Challenge 2019 global top 10."
+    },
+    {
+      "id": "ieee-paper",
+      "title": "Real-world object augmentation in 3D (IEEE)",
+      "org": "CVIS Lab, BRAC University",
+      "year": "2021",
+      "tags": [
+        "ai",
+        "research"
+      ],
+      "summary": "First-author IEEE CSDE paper: deep learning + Intel RealSense + game engine to bring real objects into virtual 3D.",
+      "links": [
+        {
+          "label": "DOI",
+          "url": "https://doi.org/10.1109/CSDE53843.2021.9718388"
+        }
+      ]
+    }
+  ],
+  "projectsNote": "Some client work is under NDA and is not listed.",
+  "recommendations": [
+    {
+      "name": "Rhythm Bhatia",
+      "headline": "PhD Student in EdTech+ML · WICCI India EU Council member · Ex-IBM",
+      "relation": "Teacher at neue fische",
+      "date": "2026-10-30",
+      "station": "neuefische",
+      "text": "Shadman showed great initiative and technical skill during his time at neue fische. For his capstone project he designed a smooth multi-agent system that automates content creation, optimization, and publishing (AI-Native Autonomous Digital Marketing Department). He pairs strong coding skills with a practical, product-focused mindset, turning complex AI concepts into reliable, working software."
+    },
+    {
+      "name": "Jisan Haider Joy",
+      "headline": "Senior Unity Developer @ Voodoo · Ex-Kolibri Games (Ubisoft Mobile)",
+      "relation": "Worked together at Kolibri Games, on different teams",
+      "date": "2026-03-08",
+      "station": "kolibri",
+      "text": "Shadman is a capable Unity developer who approaches problems with persistence and determination. When faced with complex challenges, he puts in the effort to investigate different solutions and works through issues until he finds a way forward. This mindset can be especially valuable in a live production environment where unexpected problems often arise. We worked together at Kolibri Games, in different teams, but during that time he contributed to maintaining and improving existing systems…"
+    },
+    {
+      "name": "Md Maruf Howlader",
+      "headline": "Unity Game Developer · Software Engineer · Game Porting (Steam, Xbox)",
+      "relation": "Same team at Brain Station 23",
+      "date": "2024-10-08",
+      "station": "bs23",
+      "text": "I had the pleasure of working with Mr. Shadman Shahriar Hasan during his time as a Software Engineer at Brain Station 23. His expertise in the Unity Engine, combined with his strong technical skills and collaborative approach, made a significant impact on our projects. Shadman bhai was always willing to help others, going above and beyond to support the team, making him a valued and appreciated colleague."
+    },
+    {
+      "name": "Md. Nurusshafi Evan",
+      "headline": "Systems Engineer (C#/.NET) · Unity XR Architect",
+      "relation": "Mentee",
+      "date": "2024-09-02",
+      "station": "bs23",
+      "text": "I had the privilege of being mentored by Shadman Shahriar Hasan Arko during the early stages of my career in game development, and I can confidently say that his guidance has been instrumental in shaping my professional journey. He has an exceptional ability to distill complex concepts into clear, manageable lessons, making it easier for someone like me, who was just starting out, to grasp advanced topics. His dedication to helping others succeed is unmatched…"
+    },
+    {
+      "name": "Mushfiq Iqbal",
+      "headline": "Senior Game Designer @ Bakoony",
+      "relation": "Same team",
+      "date": "2024-08-18",
+      "station": "bs23",
+      "text": "Shadman Shahriar Hasan Arko is one of the most dedicated developers I have ever worked with. He is passionate about his work and constantly works to improve himself. I wish him all the best in his future endeavors."
+    },
+    {
+      "name": "Shohag Monzur Shouvick",
+      "headline": "Lead Software Engineer · AR/VR Architect · Cloud-Native",
+      "relation": "Same team",
+      "date": "2024-08-16",
+      "station": "dreamerz",
+      "text": "I've had the pleasure of working with Shadman on a variety of AR/VR and game development projects, and I can confidently say his vision and creativity are outstanding. He has an exceptional ability to take abstract concepts and turn them into immersive, engaging experiences that truly connect with audiences. What makes Shadman stand out is his knack for simplifying complex ideas, making them easily understandable for everyone involved…"
+    },
+    {
+      "name": "Shahadat Hossain Shamim",
+      "headline": "Project Manager at Brain Station 23 PLC",
+      "relation": "Same team",
+      "date": "2024-08-15",
+      "station": "bs23",
+      "text": "Arko is an outstanding game developer who brings passion, creativity, and technical expertise to every project. We had the pleasure of working together on a Unity game project, and he consistently impressed me with his problem-solving skills, attention to detail, and dedication to delivering a high-quality product. Arko has a deep understanding of Unity and C#, and he consistently contributed innovative ideas that significantly enhanced the game's mechanics and user experience…"
+    },
+    {
+      "name": "Sajid Shahnawaz",
+      "headline": "3D Artist",
+      "relation": "Reported to Shadman",
+      "date": "2024-08-12",
+      "station": "redthorn",
+      "text": "Arko is a caring and charismatic team leader who took the time to check up on his team members individually. It was an honour and an enlightening experience to work with him."
+    },
+    {
+      "name": "Shahadat Shishir",
+      "headline": "Software Engineer (AR/VR) at BYSL Global Technology Group",
+      "relation": "Same team",
+      "date": "2024-08-11",
+      "station": "army",
+      "text": "I had the pleasure of working closely with Shadman Shahriar Arko in the field of Unity AR, VR, and Game Development, particularly on projects involving simulation software for the Bangladesh Navy. He played a crucial role in our team, especially in the development of a shooting simulator, utilizing HTC VIVE Pro and Meta Quest 2. Arko's expertise in Unity, particularly in scripting and optimization, is unparalleled. His deep understanding of multiplayer networking tools like Photon was invaluable to our project's success…"
+    },
+    {
+      "name": "Istiaque Ahmed",
+      "headline": "AR VR Specialist · Game Developer · Trainer",
+      "relation": "Teacher (BRAC University game development workshop)",
+      "date": "2024-08-09",
+      "station": "cvis",
+      "text": "I enjoyed supervising Shadman Shahriar Hasan Arko during a Game Development Workshop at BRAC University. I can confidently say he was an outstanding addition there. He approached every task with enthusiasm, a strong willingness to learn, and a keen eye for detail. Shadman Shahriar Hasan Arko quickly grasped complex concepts and consistently delivered high-quality work. He demonstrated excellent problem-solving skills and proactively sought opportunities to contribute beyond their assigned tasks…"
+    },
+    {
+      "name": "Md Mazharul Islam Antor",
+      "headline": "Student",
+      "relation": "Reported to Shadman",
+      "date": "2024-08-09",
+      "station": "army",
+      "text": "He was the leader of the SAFS project team when I was assigned to the simulator project. He was exceptionally approachable and supportive, always offering his best assistance whenever I encountered any issues. Working under his leadership was a great honor."
+    },
+    {
+      "name": "Nuruzzaman Life",
+      "headline": "Senior Game Developer at Bad Wifi Interactive",
+      "relation": "Same team",
+      "date": "2024-08-08",
+      "station": "redthorn",
+      "text": "Shadman Shahriar is a highly skilled and understanding leader. He always finds a way to solve problems, no matter how challenging. A true asset to any team."
+    },
+    {
+      "name": "Samiul Islam",
+      "headline": "Gameplay Programmer at Bad Wifi Interactive",
+      "relation": "Reported to Shadman at Red Thorn Interactive",
+      "date": "2024-08-08",
+      "station": "redthorn",
+      "text": "I worked with Shadman in Redthorn Interactive. His deep technical expertise and clear communication skills were invaluable. He fostered a collaborative environment, driving project success while supporting team growth. Shadman's leadership and problem solving abilities were outstanding, and I highly recommend him."
+    }
+  ],
+  "certificationsAll": [
+    {
+      "title": "Agentic AI Builder Certification",
+      "org": "Nebius Academy",
+      "date": "Oct 2026",
+      "area": "ai",
+      "note": "Valid until Oct 2029"
+    },
+    {
+      "title": "Game Development for Modern Platforms",
+      "org": "Michigan State University",
+      "date": "Aug 2020",
+      "area": "software",
+      "note": "Credential ID YH7X6SXMNCMD"
+    },
+    {
+      "title": "NASA Space Apps Challenge — global top 10",
+      "org": "NASA",
+      "date": "Nov 2019",
+      "area": "software"
+    },
+    {
+      "title": "Workshop: Learn to Create a VR Game with Unity",
+      "org": "Bangladesh Innovation Forum",
+      "date": "Sep 2019",
+      "area": "software"
+    },
+    {
+      "title": "Workshop: VR Pipeline",
+      "org": "Bangladesh Innovation Forum",
+      "date": "Sep 2019",
+      "area": "software"
+    },
+    {
+      "title": "CVIS Hands-on Training: Virtual and Augmented Reality",
+      "org": "BRAC University",
+      "date": "Apr 2019",
+      "area": "software"
+    },
+    {
+      "title": "Game Development",
+      "org": "BRAC University",
+      "date": "Oct 2018",
+      "area": "software"
+    },
+    {
+      "title": "Certificate of Excellence — Twenty-One-Ovation",
+      "org": "BRAC University",
+      "date": "Jul 2017",
+      "area": "other"
+    },
+    {
+      "title": "Presentation Skills",
+      "org": "BRAC University",
+      "date": "Apr 2017",
+      "area": "other"
+    }
+  ],
+  "techJourney": [
+    {
+      "era": "Python web & backend",
+      "when": "University",
+      "tools": [
+        "Python",
+        "Web backends"
+      ]
+    },
+    {
+      "era": "Robotics & IoT",
+      "when": "University",
+      "tools": [
+        "Raspberry Pi",
+        "C",
+        "C++",
+        "Python"
+      ]
+    },
+    {
+      "era": "VR & AR",
+      "when": "2018 – 2021",
+      "tools": [
+        "Unity",
+        "C#",
+        "ARCore",
+        "ARKit",
+        "HTC Vive",
+        "Meta Quest"
+      ]
+    },
+    {
+      "era": "Game development",
+      "when": "2019 – 2022",
+      "tools": [
+        "Unity",
+        "Unreal",
+        "C#",
+        "C++"
+      ]
+    },
+    {
+      "era": "Android & iOS apps",
+      "when": "2019 – 2022",
+      "tools": [
+        "Unity",
+        "Flutter",
+        "Kotlin",
+        "Java"
+      ]
+    },
+    {
+      "era": "E-commerce web",
+      "when": "2021 – 2022",
+      "tools": [
+        "nopCommerce",
+        "ASP.NET",
+        "C#"
+      ]
+    },
+    {
+      "era": "Web apps & backends",
+      "when": "2021 – 2024",
+      "tools": [
+        "ASP.NET Core",
+        "Spring Boot",
+        "Vue",
+        "Three.js",
+        "JavaScript"
+      ]
+    },
+    {
+      "era": "Game development, at scale",
+      "when": "2022 – 2026",
+      "tools": [
+        "Unity",
+        "Godot",
+        "Zenject",
+        "UniRx",
+        "CI/CD"
+      ]
+    },
+    {
+      "era": "Machine learning & AI",
+      "when": "2026 →",
+      "tools": [
+        "Python",
+        "scikit-learn",
+        "PyTorch",
+        "Transformers",
+        "SQL",
+        "dbt"
+      ]
+    },
+    {
+      "era": "Solutions engineering & architecture",
+      "when": "2026 →",
+      "tools": [
+        "System design",
+        "POCs",
+        "Client discovery"
+      ]
+    },
+    {
+      "era": "Agentic AI",
+      "when": "2026 →",
+      "tools": [
+        "MCP",
+        "Claude",
+        "LangGraph",
+        "RAG",
+        "Evals"
+      ]
+    },
+    {
+      "era": "Forward deployed AI engineering",
+      "when": "now",
+      "tools": [
+        "Problem → production → impact"
+      ]
+    }
+  ],
+  "languages": [
+    "Python",
+    "C#",
+    "C",
+    "C++",
+    "Java",
+    "Kotlin",
+    "JavaScript",
+    "TypeScript",
+    "SQL",
+    "GDScript",
+    "Dart",
+    "PHP"
+  ],
+  "frameworks": {
+    "AI & ML": [
+      "PyTorch",
+      "Hugging Face Transformers",
+      "scikit-learn",
+      "LangGraph",
+      "LangChain",
+      "MCP",
+      "Claude API",
+      "vLLM",
+      "Distil Labs",
+      "LoRA",
+      "OR-Tools CP-SAT",
+      "MLflow",
+      "Langfuse",
+      "LangSmith"
+    ],
+    "Data": [
+      "pandas",
+      "NumPy",
+      "Polars",
+      "DuckDB",
+      "dbt",
+      "Dagster",
+      "PostgreSQL",
+      "PostGIS",
+      "pgvector",
+      "Redis",
+      "MongoDB",
+      "Metabase"
+    ],
+    "Backend & web": [
+      "FastAPI",
+      "ASP.NET Core",
+      ".NET",
+      "Spring Boot",
+      "Node.js",
+      "NestJS",
+      "Next.js",
+      "React",
+      "Vue",
+      "Three.js",
+      "nopCommerce",
+      "Astro",
+      "Remotion"
+    ],
+    "Games & XR": [
+      "Unity",
+      "Unreal Engine",
+      "Godot",
+      "Photon",
+      "Zenject / VContainer",
+      "UniRx",
+      "UniTask",
+      "XR Interaction Toolkit",
+      "ARCore",
+      "ARKit",
+      "Intel RealSense",
+      "bHaptics"
+    ],
+    "Mobile": [
+      "Unity (Android/iOS)",
+      "Flutter"
+    ],
+    "Cloud & DevOps": [
+      "AWS (Lambda, ECR, API Gateway, EC2)",
+      "Docker",
+      "GitHub Actions",
+      "Jenkins",
+      "Nginx",
+      "Runpod",
+      "uv",
+      "pytest"
+    ],
+    "Tools": [
+      "Git",
+      "Jira",
+      "Blender",
+      "Maya",
+      "Claude Code"
+    ]
+  },
+  "spokenLanguages": [
+    {
+      "name": "English",
+      "level": "Native"
+    },
+    {
+      "name": "Bengali",
+      "level": "Native"
+    },
+    {
+      "name": "German",
+      "level": "B1"
+    },
+    {
+      "name": "Hindi",
+      "level": "Conversational"
+    },
+    {
+      "name": "Urdu",
+      "level": "Conversational"
+    },
+    {
+      "name": "French",
+      "level": "Basic"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+---
+// Always-visible navigation: sticky HUD (desktop), bottom tab bar (phones)
+// and the full-menu <dialog>. Plain labels are primary; kitchen puns are
+// subtitles and disappear on narrower screens. "Simple version" links to the
+// plain one-page site at /simple.
+import p from '../../data/profile.json';
+import * as S from '../../scripts/site/sprites';
+import PixelIcon from './PixelIcon.astro';
+
+const sa = S.textSprite('SA', '1', '5', 2);
+const badge = ['1'.repeat(sa[0].length + 2), ...sa.map((r) => `1${r}1`), '1'.repeat(sa[0].length + 2)];
+
+const nFrameworks = Object.values(p.frameworks).flat().length;
+
+const main = [
+  { href: '#ai-work', lbl: 'AI work', pun: "today's specials" },
+  { href: '#projects', lbl: 'Projects', pun: 'every dish' },
+  { href: '#journey', lbl: 'Skills', pun: 'how I got here' },
+  { href: '#experience', lbl: 'Experience', pun: 'shift log' },
+  { href: '#contact', lbl: 'Contact', pun: 'ring the bell' },
+];
+const tabs = [
+  { href: '#ai-work', lbl: 'AI work', icon: S.ICON.pot },
+  { href: '#projects', lbl: 'Projects', icon: S.ICON.crate },
+  { href: '#experience', lbl: 'Jobs', icon: S.ICON.receipt },
+  { href: '#cv', lbl: 'CV', icon: S.ICON.paper },
+  { href: '#contact', lbl: 'Contact', icon: S.ICON.bell },
+];
+const menu = [
+  {
+    group: 'Mains',
+    items: [
+      { href: '#career-tour', item: 'Career tour', count: 'press play' },
+      { href: '#ai-work', item: 'AI work', count: `${p.caseStudies.length} case studies` },
+      { href: '#how-i-work', item: 'How I work', count: `${p.loop.length} steps` },
+      { href: '#projects', item: 'All projects', count: `${p.projects.length} dishes` },
+      { href: '#experience', item: 'Experience', count: `${p.stations.length} stops` },
+    ],
+  },
+  {
+    group: 'Sides',
+    items: [
+      { href: '#journey', item: 'How I got here', count: `${p.techJourney.length} eras` },
+      { href: '#skills', item: 'Languages & frameworks', count: `${p.languages.length} + ${nFrameworks}` },
+      { href: '#about', item: 'About', count: 'the engineer' },
+      { href: '#credentials', item: 'Education & certificates', count: `${p.education.length + p.certificationsAll.length} framed` },
+      { href: '#research', item: 'Research & honours', count: 'high scores' },
+      { href: '#references', item: 'References', count: `${p.recommendations.length} notes` },
+    ],
+  },
+  {
+    group: 'To go',
+    items: [
+      { href: '#cv', item: 'CV', count: 'print / PDF' },
+      { href: '#contact', item: 'Contact', count: 'ring the bell' },
+    ],
+  },
+];
+---
+<header class="hud">
+  <div class="wrap hud-in">
+    <a class="hud-id" href="#top" aria-label={`${p.meta.name}, ${p.meta.role}: back to top`}>
+      <PixelIcon s={badge} size={30} />
+      <span class="hud-who">
+        <span class="hud-name">{p.meta.name}</span>
+        <span class="hud-role"><span class="long">{p.meta.role}</span><span class="short">AI Engineer</span></span>
+      </span>
+    </a>
+    <nav class="hud-nav" aria-label="Main">
+      {main.map((m) => (
+        <a href={m.href}><span class="lbl">{m.lbl}</span><span class="pun" aria-hidden="true">{m.pun}</span></a>
+      ))}
+    </nav>
+    <div class="hud-tools">
+      <a class="btn hud-cv" href="#cv">CV</a>
+      <button type="button" class="btn" data-open-menu aria-haspopup="dialog" aria-controls="full-menu">≡ Menu</button>
+      <a class="btn simple-btn" href="/simple" title="A plain one-page version of this portfolio, no pixels">
+        <span class="long">Simple version</span><span class="short" aria-hidden="true">Simple</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<nav class="tabbar" aria-label="Tabs">
+  {tabs.map((t) => (
+    <a href={t.href}><PixelIcon s={t.icon} size={22} />{t.lbl}</a>
+  ))}
+</nav>
+
+<dialog class="fullmenu" id="full-menu" aria-labelledby="fm-title">
+  <div class="fm-board">
+    <h2 id="fm-title">Full menu</h2>
+    <p>Everything on this site, one click away.</p>
+    <button type="button" class="fm-close" data-close-menu aria-label="Close menu">×</button>
+    <nav class="fm-cols" aria-label="Full menu">
+      {menu.map((g) => (
+        <div>
+          <h3>{g.group}</h3>
+          <ul>
+            {g.items.map((i) => (
+              <li><a href={i.href} data-close-menu><span class="item">{i.item}</span><span class="dots" aria-hidden="true"></span><span class="count">{i.count}</span></a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+    <div class="fm-tools">
+      <a class="btn primary" href="/simple">Simple version (plain one-pager)</a>
+      <a class="btn" href="#cv" data-close-menu>Print the CV</a>
+    </div>
+  </div>
+</dialog>

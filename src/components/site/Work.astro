@@ -1,0 +1,81 @@
+---
+// AI work ("Today's specials" order tickets, the hero section) and How I work ("The house recipe").
+import p from '../../data/profile.json';
+
+const bySlug = Object.fromEntries(p.caseStudies.map((c) => [c.slug, c]));
+const cook: Record<string, string> = {
+  Problem: "ask the guest what they're hungry for",
+  Data: 'shop the ingredients',
+  Solution: 'the simplest recipe that works',
+  Engineering: 'mise en place',
+  Deployment: 'serve it hot, with a taster',
+  Impact: 'read the reviews, adjust the salt',
+};
+const short = (t: string) => t.split(' — ')[0];
+---
+<section class="sec" id="ai-work" aria-labelledby="ai-work-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">Today's specials · {p.caseStudies.length} orders</span>
+      <h2 id="ai-work-h" tabindex="-1">AI work</h2>
+      <p>Six AI systems, from a business problem to production. The headline number is on every ticket; open one for the full metrics, the stack and the repos. Each ticket has its own link you can forward.</p>
+    </div>
+    <ol class="tickets">
+      {p.caseStudies.map((c, i) => (
+        <li class="ticket-wrap">
+          <div class="ticket-paper">
+          <details class="ticket" id={`case-${c.slug}`}>
+            <summary>
+              <span class="t-order">Order #0{i + 1} · Table: {c.client} · {c.period}</span>
+              {c.flagship && <span class="special">Chef's special</span>}
+              <h3>{c.title}</h3>
+              <span class="t-metric"><b>{c.headlineMetric.value}</b><span>{c.headlineMetric.label}</span></span>
+              <span class="t-one">{c.oneLiner}</span>
+              <span class="t-more"><span class="closed">Show details</span><span class="opened">Hide details</span></span>
+            </summary>
+            <div class="t-body">
+              <h4>What shipped</h4>
+              <ul>{c.metrics.map((m) => <li>{m}</li>)}</ul>
+              <h4>Ingredients</h4>
+              <ul class="chips" aria-label="Stack">{c.stack.map((s) => <li>{s}</li>)}</ul>
+              {c.repos.length > 0 && (
+                <>
+                  <h4>Repos</h4>
+                  <ul class="chips" aria-label="Repositories">{c.repos.map((r) => <li>{r}</li>)}</ul>
+                </>
+              )}
+              {'note' in c && c.note && <p class="t-note">{c.note}</p>}
+            </div>
+          </details>
+          <div class="t-actions">
+            {('demos' in c ? c.demos ?? [] : []).map((d) => (
+              <a class="btn primary" href={d.url} target="_blank" rel="noopener">Try the {d.label.toLowerCase()} ↗</a>
+            ))}
+            <button type="button" class="btn" data-copy={`case-${c.slug}`}>Copy link</button>
+          </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<section class="sec" id="how-i-work" aria-labelledby="how-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">The house recipe · {p.loop.length} steps</span>
+      <h2 id="how-h" tabindex="-1">How I work</h2>
+      <p>The same loop runs through every project above, from sitting with the people who own the problem to measuring whether it worked.</p>
+    </div>
+    <ol class="recipe">
+      {p.loop.map((l) => (
+        <li class="panel">
+          <h3>{l.step}</h3>
+          <span class="cook">{cook[l.step] ?? ''}</span>
+          <p>{l.text}</p>
+          <a href={`#case-${l.evidence}`}>Evidence: {short(bySlug[l.evidence]?.title ?? l.evidence)} →</a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

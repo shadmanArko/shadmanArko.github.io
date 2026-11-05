@@ -1,0 +1,53 @@
+---
+// References ("The guest book"): all LinkedIn recommendations in full, as
+// pinned notes. Long notes collapse behind "Read more" once JS is running;
+// chips filter by the place we worked together.
+import p from '../../data/profile.json';
+
+type Rec = (typeof p.recommendations)[number] & { station: string | null };
+const recs = p.recommendations as Rec[];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmt = (d: string) => {
+  const [y, m] = d.split('-');
+  return `${MONTHS[Number(m) - 1] ?? ''} ${y}`.trim();
+};
+const stationName = (id: string | null) => {
+  const s = id ? p.stations.find((x) => x.id === id) : undefined;
+  return s ? s.name.split(',')[0].split(' / ')[0].replace(/\s*\(.*\)/, '') : null;
+};
+// Filter chips in career order (newest first), then the notes not tied to one place.
+const used = [...p.stations].reverse().filter((s) => recs.some((r) => r.station === s.id));
+const other = recs.filter((r) => !r.station || !p.stations.some((s) => s.id === r.station)).length;
+const LONG = 420;
+---
+<section class="sec" id="references" aria-labelledby="refs-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">The guest book · {recs.length} notes</span>
+      <h2 id="refs-h" tabindex="-1">References</h2>
+      <p>All {recs.length} recommendations from LinkedIn, in full: teachers, a mentee, people who reported to me, teammates and colleagues.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter references by where we worked together">
+      <button type="button" aria-pressed="true" data-rfilter="all">All · {recs.length}</button>
+      {used.map((s) => (
+        <button type="button" aria-pressed="false" data-rfilter={s.id}>{stationName(s.id)} · {recs.filter((r) => r.station === s.id).length}</button>
+      ))}
+      {other > 0 && <button type="button" aria-pressed="false" data-rfilter="other">Other · {other}</button>}
+    </div>
+    <p class="sr-only" aria-live="polite" data-rstatus></p>
+    <ul class="notes">
+      {recs.map((r, i) => {
+        const at = stationName(r.station);
+        const long = r.text.length > LONG;
+        return (
+          <li class:list={['note', { long }]} data-station={at ? r.station : 'other'}>
+            <blockquote id={`rec-${i}`}>“{r.text}”</blockquote>
+            {long && <button type="button" class="more" aria-expanded="false" aria-controls={`rec-${i}`} hidden>Read more</button>}
+            <p class="who">{r.name}<span class="hl">{r.headline}</span></p>
+            <p class="rel">{r.relation}{at && r.relation.indexOf(at) < 0 ? ` · ${at}` : ''} · {fmt(r.date)}</p>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>

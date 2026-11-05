@@ -1,0 +1,46 @@
+---
+// About: summary, photo and the three-panel comic strip.
+import p from '../../data/profile.json';
+import * as S from '../../scripts/site/sprites';
+import PixelIcon from './PixelIcon.astro';
+---
+<section class="sec" id="about" aria-labelledby="about-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">The engineer behind the AI</span>
+      <h2 id="about-h" tabindex="-1">About</h2>
+    </div>
+    <div class="about">
+      <figure class="polaroid">
+        <img
+          src={p.meta.avatar}
+          alt="Portrait of Shadman Arko: curly dark hair, black-rimmed glasses, a short beard and a dark suit."
+          width="560"
+          height="560"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>{p.meta.name} · {p.meta.location}</figcaption>
+      </figure>
+      <div class="about-text">
+        {p.summary.map((s) => <p>{s}</p>)}
+        <p><strong>{p.meta.status}.</strong></p>
+        <ol class="comic" aria-label="Three-panel story">
+          <li>
+            <div class="art" aria-hidden="true"><PixelIcon s={[...S.CHEF_HEAD_FLASH, ...S.CHEF_BODY.flash]} size={72} /></div>
+            <p><b>2018 · Dhaka</b>Computer vision and XR at BRAC University's CVIS Lab, then games and VR.</p>
+          </li>
+          <li>
+            <div class="art" aria-hidden="true"><PixelIcon s={S.MINECART} size={44} class="sm" /></div>
+            <p><b>2025 · Berlin</b>Idle Miner Tycoon at Kolibri Games (Ubisoft Mobile).</p>
+          </li>
+          <li>
+            <div class="art" aria-hidden="true"><PixelIcon s={S.HANDI} size={44} class="sm" /><PixelIcon s={S.ROBOT} size={44} class="sm" /></div>
+            <p><b>2026 · Berlin</b>Hired as Forward Deployed AI Engineer at a Berlin cloud kitchen; gave it AI staff.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+  </div>
+</section>

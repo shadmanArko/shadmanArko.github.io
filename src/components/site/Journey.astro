@@ -1,0 +1,112 @@
+---
+// "How I got here": the tech journey as a pixel path (12 eras, a snake on
+// wide screens and a vertical trail on phones), then the pantry: every
+// language and framework from profile.json, grouped and counted.
+import p from '../../data/profile.json';
+import * as S from '../../scripts/site/sprites';
+import PixelIcon from './PixelIcon.astro';
+
+const COLS = 4;
+// Decorative pixel art per era (aria-hidden), in techJourney order.
+const art = [
+  S.LAPTOP, S.ROBOT, S.ICON.crosshair, S.ARCADE, S.ICON.star, S.ICON.crate,
+  S.ICON.paper, S.MINECART, S.TANDOOR, S.ICON.crowd, S.APPRENTICE, S.ICON.toque,
+];
+// Colour bands: university, the games/XR/apps years, the AI years.
+const tone = (i: number) => (i < 2 ? 'uni' : i < 8 ? 'games' : 'ai');
+const n = p.techJourney.length;
+const eras = p.techJourney.map((e, i) => {
+  const row = Math.floor(i / COLS);
+  const pos = i % COLS;
+  const col = row % 2 === 0 ? pos + 1 : COLS - pos;
+  const dir = i === n - 1 ? 'none' : pos === COLS - 1 ? 'down' : row % 2 === 0 ? 'right' : 'left';
+  return { ...e, i, row: row + 1, col, dir, tone: tone(i), art: art[i] ?? S.ICON.star };
+});
+
+const groups = Object.entries(p.frameworks);
+const nFrameworks = groups.reduce((a, [, v]) => a + v.length, 0);
+---
+<section class="sec" id="journey" aria-labelledby="journey-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">The long walk to the pass · {n} eras since university</span>
+      <h2 id="journey-h" tabindex="-1">How I got here</h2>
+      <p>
+        From Python at university to forward deployed AI engineering. Every stop added tools I still reach for;
+        follow the dotted trail from the start to where I am now.
+      </p>
+    </div>
+
+    <ol class="path" aria-label={`Tech journey, ${n} eras in order`}>
+      {eras.map((e) => (
+        <li class={`era tone-${e.tone}`} data-dir={e.dir} style={`--r:${e.row};--c:${e.col}`}>
+          <div class="era-in">
+            <div class="era-top">
+              <span class="lv">{e.i === 0 ? 'Start' : `Lv ${String(e.i + 1).padStart(2, '0')}`}</span>
+              <span class="when">{e.when}</span>
+            </div>
+            <div class="era-art" aria-hidden="true"><PixelIcon s={e.art} size={30} /></div>
+            <h3>{e.era}</h3>
+            <ul class="chips" aria-label="Tools">{e.tools.map((t) => <li>{t}</li>)}</ul>
+            {e.i === n - 1 && <span class="here">You are here</span>}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="evolve panel">
+      <div class="classes" aria-hidden="true">
+        <span class="from">Game developer</span>
+        <span>is evolving…</span>
+        <span class="to">{p.meta.role}</span>
+      </div>
+      <div>
+        <p><strong>What carried over from games to AI:</strong></p>
+        <ul>
+          <li>Real-time, data-driven software that millions of people use</li>
+          <li>Leading teams of up to 12, and setting up studios' engineering from zero</li>
+          <li>The bridge: an MCP server connecting Claude Code to Unity, built at Bad Wifi Interactive</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pantry" aria-labelledby="skills">
+      <div class="sub-head">
+        <span class="kick">The pantry · {p.languages.length} languages · {nFrameworks} frameworks &amp; tools</span>
+        <h3 id="skills" tabindex="-1">Languages &amp; frameworks</h3>
+        <p>All hands-on, picked up job by job and project by project, whenever a problem needed them.</p>
+      </div>
+
+      <div class="shelf langs">
+        <h4>Languages · {p.languages.length}</h4>
+        <ul>{p.languages.map((l) => <li class="jar"><span>{l}</span></li>)}</ul>
+      </div>
+
+      <div class="shelf langs">
+        <h4>Spoken languages · {p.spokenLanguages.length}</h4>
+        <ul>{p.spokenLanguages.map((l) => <li class="jar"><span>{l.name} · {l.level}</span></li>)}</ul>
+      </div>
+
+      <ul class="crates">
+        {groups.map(([g, items]) => (
+          <li class="crate">
+            <h4>{g} <span class="n">{items.length}</span></h4>
+            <ul class="chips">{items.map((t) => <li>{t}</li>)}</ul>
+          </li>
+        ))}
+      </ul>
+
+      <div class="specials">
+        <h4>House specialities</h4>
+        <ul class="spec-cols">
+          {Object.entries(p.skills).map(([k, v]) => (
+            <li>
+              <b>{k}</b>
+              <ul>{v.map((x) => <li>{x}</li>)}</ul>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

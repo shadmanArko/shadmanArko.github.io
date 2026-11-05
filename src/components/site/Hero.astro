@@ -1,0 +1,94 @@
+---
+// First paint: shop awning + sign, who/what/status, seniority, the café-sim
+// resource strip (proof numbers) and the chalkboard menu. Kept compact so the
+// career tour right below starts near the fold on a typical laptop screen.
+import p from '../../data/profile.json';
+import * as S from '../../scripts/site/sprites';
+import PixelIcon from './PixelIcon.astro';
+
+// Pixel awning tiles (scalloped edge + rickshaw-art flower band) as SVG data URIs.
+function svgTile(rows: string[], scale: number) {
+  const w = rows[0].length, h = rows.length;
+  let r = '';
+  rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') r += `<rect x='${x}' y='${y}' width='1' height='1' fill='${S.PAL[ch]}'/>`; }));
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' shape-rendering='crispEdges'>${r}</svg>`;
+  return { url: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`, size: `${w * scale}px ${h * scale}px` };
+}
+const scallops = svgTile([
+  '5555555555bbbbbbbbbb',
+  '5555555555bbbbbbbbbb',
+  '1555555551bbbbbbbbb1',
+  '.11555511..11bbbb11.',
+  '...1111......1111...',
+], 3);
+const band = svgTile([
+  '999999999999',
+  '997999999999',
+  '975799b9g959',
+  '997999999999',
+  '999999999999',
+], 3);
+
+const kolibri = p.experience.find((e) => e.company.startsWith('Kolibri'))!;
+const redthorn = p.experience.find((e) => e.company.startsWith('Red Thorn'))!;
+const icons = [S.ICON.calendar, S.ICON.crate, S.ICON.crowd, S.ICON.tray];
+// Café-sim resource strip: the value from profile.json, a short label that
+// restates it (e.g. "9 YRS SHIPPING"), and the full label for screen readers.
+const short = ['shipping', 'projects', 'of users', 'models in prod'];
+const proof = p.proof.map((x, i) => {
+  const m = x.value.match(/^(\d+)(.*)$/);
+  return { value: x.value, num: m ? m[1] : x.value, unit: m ? m[2] : '', label: x.label, short: short[i] ?? '', countable: !!m };
+});
+const board = [
+  { href: '#career-tour', item: 'Career tour', count: 'press play' },
+  { href: '#ai-work', item: 'AI work', count: `${p.caseStudies.length} specials` },
+  { href: '#projects', item: 'All projects', count: `${p.projects.length} dishes` },
+  { href: '#journey', item: 'How I got here', count: `${p.techJourney.length} eras` },
+  { href: '#experience', item: 'Experience', count: `${p.stations.length} stops` },
+  { href: '#references', item: 'References', count: `${p.recommendations.length} notes` },
+  { href: '#cv', item: 'CV', count: 'print / PDF' },
+  { href: '#contact', item: 'Contact', count: 'ring the bell' },
+];
+---
+<div class="awning">
+  <div class="awning-stripes" aria-hidden="true"></div>
+  <div class="awning-band" aria-hidden="true" style={`background-image:${band.url};background-size:${band.size}`}></div>
+  <div class="awning-scallops" aria-hidden="true" style={`background-image:${scallops.url};background-size:${scallops.size}`}></div>
+  <p class="shop-sign"><PixelIcon s={S.ICON.robot} size={16} /> Shadman Arko · Berlin</p>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-id">
+      <h1><span class="h1-name">{p.meta.name}</span><span class="sr-only">, </span><span class="h1-role">{p.meta.role}</span></h1>
+      <p class="headline">{p.meta.headline}</p>
+      <p class="permit"><span class="permit-dot" aria-hidden="true"></span>{p.meta.status}</p>
+      <p class="seniority">
+        Previously <strong>{kolibri.role.split(' · ')[0]} at {kolibri.company}</strong> and
+        <strong>Lead Developer at {redthorn.company}</strong>, leading a team of 12. Shipping since 2018.
+      </p>
+    </div>
+    <ul class="proof" aria-label="Proof in numbers">
+      {proof.map((x, i) => (
+        <li>
+          <PixelIcon s={icons[i]} size={26} />
+          <span class="pv" aria-hidden="true">
+            <b>{x.countable ? <span data-count={x.num}>{x.num}</span> : x.num}{x.unit && <span class="unit">{x.unit}</span>}</b>
+            <span class="lbl">{x.short}</span>
+          </span>
+          <span class="sr-only">{x.value} {x.label}</span>
+        </li>
+      ))}
+    </ul>
+    <nav class="chalkboard" aria-label="Menu board">
+      <h2>MENU</h2>
+      <p class="sub">Pick a dish, or press play on the tour.</p>
+      <ul>
+        {board.map((b) => (
+          <li><a href={b.href}><span class="item">{b.item}</span><span class="dots" aria-hidden="true"></span><span class="count">{b.count}</span></a></li>
+        ))}
+      </ul>
+      <div class="tray" aria-hidden="true"></div>
+    </nav>
+  </div>
+</header>

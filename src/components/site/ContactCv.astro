@@ -1,0 +1,95 @@
+---
+// Contact ("Ring the bell") and the print-ready CV ("Print the receipt"),
+// both built from the same JSON as the rest of the page. The CV lists every
+// job from p.stations (newest first) plus education, certificates and skills.
+import p from '../../data/profile.json';
+import * as S from '../../scripts/site/sprites';
+import PixelIcon from './PixelIcon.astro';
+
+const contacts = [
+  { lbl: 'Email', sub: p.meta.email, href: `mailto:${p.meta.email}`, icon: S.ICON.paper },
+  { lbl: 'LinkedIn', sub: p.meta.links.linkedin.replace('https://www.', ''), href: p.meta.links.linkedin, icon: S.ICON.crowd },
+  { lbl: 'GitHub', sub: p.meta.links.github.replace('https://', ''), href: p.meta.links.github, icon: S.ICON.robot },
+  { lbl: 'Hugging Face', sub: p.meta.links.huggingface.replace('https://', ''), href: p.meta.links.huggingface, icon: S.ICON.pot },
+];
+const host = (u: string) => u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+const jobs = [...p.stations].reverse().filter((s) => s.kind === 'work');
+const certOrder = ['ai', 'software', 'other'];
+const certs = [...p.certificationsAll].sort((a, b) => certOrder.indexOf(a.area) - certOrder.indexOf(b.area));
+---
+<section class="sec" id="contact" aria-labelledby="contact-h">
+  <div class="wrap">
+    <div class="order panel">
+      <div>
+        <span class="label" style="color:var(--green)">Place an order · ring the bell</span>
+        <h2 id="contact-h" tabindex="-1">Contact</h2>
+        <p>{p.meta.status}. Email is the fastest way to reach me.</p>
+        <div class="contact-btns">
+          {contacts.map((c, i) => (
+            <a class:list={['btn', { primary: i === 0 }]} href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+              <PixelIcon s={c.icon} size={28} />
+              <span>{c.lbl}<small>{c.sub}</small></span>
+            </a>
+          ))}
+        </div>
+      </div>
+      <div class="bell-big" aria-hidden="true"><PixelIcon s={S.ICON.bell} size={110} /></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="cv" aria-labelledby="cv-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">Print the receipt</span>
+      <h2 id="cv-h" tabindex="-1">CV</h2>
+    </div>
+    <div class="cv-actions">
+      <button type="button" class="btn primary" data-print>Print / Save as PDF</button>
+      <p>One page with every job, generated from the same data as this site. Use your browser's “Save as PDF”.</p>
+    </div>
+    <article class="cv-paper" aria-label="CV">
+      <h3>{p.meta.fullName}</h3>
+      <p class="cv-role">{p.meta.role} · {p.meta.location}</p>
+      <p class="cv-contact">
+        {p.meta.email} · {host(p.meta.links.linkedin)} · {host(p.meta.links.github)} · {host(p.meta.links.huggingface)} · {host(p.meta.links.site)}
+      </p>
+      <p>{p.meta.headline} {p.meta.status}.</p>
+
+      <h4>Selected AI work</h4>
+      <ul>
+        {p.caseStudies.map((c) => (
+          <li><strong>{c.title.split(' — ')[0]}</strong> ({c.period}): {c.headlineMetric.value} {c.headlineMetric.label}.</li>
+        ))}
+      </ul>
+
+      <h4>Experience</h4>
+      {jobs.map((j) => (
+        <div class="cv-job">
+          <div class="l1">{j.role}, {j.name} <span>{j.period} · {j.city}</span></div>
+          <ul>{j.did.slice(0, 2).map((d) => <li>{d}</li>)}</ul>
+        </div>
+      ))}
+
+      <div class="cv-cols">
+        <div>
+          <h4>Education</h4>
+          <ul>{p.education.map((e) => <li>{e.title}, {e.org} ({e.period})</li>)}</ul>
+          <h4>Certificates & research</h4>
+          <ul>
+            <li>{p.research.role}: “{p.research.title}”, IEEE CSDE {p.research.year}</li>
+            {certs.slice(0, 3).map((c) => <li>{c.title}, {c.org} ({c.date})</li>)}
+          </ul>
+        </div>
+        <div>
+          <h4>Skills</h4>
+          <ul>
+            {Object.entries(p.skills).map(([k, v]) => <li><strong>{k}:</strong> {v.join(', ')}</li>)}
+            <li><strong>Programming languages:</strong> {p.languages.join(', ')}</li>
+            <li><strong>Spoken languages:</strong> {p.spokenLanguages.map((l) => `${l.name} (${l.level})`).join(', ')}</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>

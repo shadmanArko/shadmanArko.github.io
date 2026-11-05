@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# Job applications live in their own private repo (shadmanArko/job-applications); this repo is public
+applications/
+.claude/

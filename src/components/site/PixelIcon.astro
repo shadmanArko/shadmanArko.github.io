@@ -1,0 +1,47 @@
+---
+// Build-time pixel art: turns a palette-indexed sprite (the same strings the
+// canvas game uses) into an inline SVG of run-merged paths. Zero JS.
+import { PAL } from '../../scripts/site/sprites';
+
+interface Props {
+  s: string[];
+  /** Rendered height in CSS px (width follows the sprite's aspect ratio). */
+  size?: number;
+  /** Accessible label; omit for decorative icons. */
+  label?: string;
+  class?: string;
+  /** Optional colour overrides, e.g. { e: 'b' } to recolour a robot mint. */
+  rc?: Record<string, string>;
+}
+const { s, size = 24, label, class: cls = '', rc } = Astro.props;
+const w = s[0].length;
+const h = s.length;
+// One <path> per colour, each horizontal run as "M x y h w v1 h-w z".
+const runs: Record<string, string> = {};
+s.forEach((row, y) => {
+  let x = 0;
+  while (x < w) {
+    const ch = row[x];
+    if (ch === '.') { x++; continue; }
+    let e = x;
+    while (e < w && row[e] === ch) e++;
+    const fill = PAL[rc?.[ch] ?? ch];
+    if (fill) runs[fill] = (runs[fill] ?? '') + `M${x} ${y}h${e - x}v1h-${e - x}z`;
+    x = e;
+  }
+});
+const rects = Object.entries(runs).map(([fill, d]) => `<path fill="${fill}" d="${d}"/>`).join('');
+const width = Math.round((size * w) / h);
+---
+<svg
+  class={`px ${cls}`}
+  viewBox={`0 0 ${w} ${h}`}
+  width={width}
+  height={size}
+  shape-rendering="crispEdges"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+  set:html={rects}
+/>

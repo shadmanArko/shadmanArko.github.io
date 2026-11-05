@@ -1,0 +1,67 @@
+---
+// All projects ("Every dish we've served"): every entry of p.projects, with
+// tag filter chips and a live count. Cards link to the AI case study ticket
+// (when there is one) and to the place in Experience where it was built.
+import p from '../../data/profile.json';
+
+type Project = (typeof p.projects)[number] & { links?: { label: string; url: string }[]; caseStudy?: string | null };
+
+const chips = [
+  { id: 'ai', name: 'AI' },
+  { id: 'data', name: 'Data' },
+  { id: 'games', name: 'Games' },
+  { id: 'xr', name: 'XR/VR' },
+  { id: 'mobile', name: 'Mobile' },
+  { id: 'web', name: 'Web' },
+  { id: 'client', name: 'Client' },
+  { id: 'research', name: 'Research' },
+];
+const tagName: Record<string, string> = { ...Object.fromEntries(chips.map((c) => [c.id, c.name])), health: 'Health' };
+const projects = p.projects as Project[];
+const count = (t: string) => projects.filter((x) => x.tags.includes(t)).length;
+// Where each project was built (a job first, else the school that lists it).
+const stationOf = (id: string) =>
+  p.stations.find((s) => s.kind === 'work' && s.projects.includes(id)) ?? p.stations.find((s) => s.projects.includes(id));
+const caseTitle = Object.fromEntries(p.caseStudies.map((c) => [c.slug, c.title]));
+---
+<section class="sec" id="projects" aria-labelledby="projects-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">Every dish we've served · {projects.length} projects</span>
+      <h2 id="projects-h" tabindex="-1">All projects</h2>
+      <p>
+        Everything from the AI systems above to games on Steam, VR simulators and research. The coloured lids are tags; pick one to filter.
+        {p.projectsNote}
+      </p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter projects by tag">
+      <button type="button" aria-pressed="true" data-pfilter="all">All · {projects.length}</button>
+      {chips.map((c) => (
+        <button type="button" aria-pressed="false" data-pfilter={c.id} data-lid={c.id}>{c.name} · {count(c.id)}</button>
+      ))}
+    </div>
+    <p class="p-count" aria-live="polite" data-pcount>Showing {projects.length} of {projects.length} projects</p>
+    <ul class="boxes projects">
+      {projects.map((x) => {
+        const st = stationOf(x.id);
+        return (
+          <li class="box proj" id={`project-${x.id}`} data-lid={x.tags[0]} data-tags={x.tags.join(' ')}>
+            <span class="tags">{x.tags.map((t) => tagName[t] ?? t).join(' · ')} · {x.year}</span>
+            <h3>{x.title}</h3>
+            <p class="org">{x.org}</p>
+            <p class="sum">{x.summary}</p>
+            {(x.caseStudy || x.links?.length || st) && <div class="plinks">
+              {x.caseStudy && (
+                <a class="case-link" href={`#case-${x.caseStudy}`} title={caseTitle[x.caseStudy]}>Read the case study ↑</a>
+              )}
+              {(x.links ?? []).map((l) => (
+                <a href={l.url} target="_blank" rel="noopener">{l.label} ↗</a>
+              ))}
+              {st && <a class="at" href={`#station-${st.id}`}>Built at {st.name.split(',')[0].split(' / ')[0].replace(/\s*\(.*\)/, '')} →</a>}
+            </div>}
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>

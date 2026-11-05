@@ -1,0 +1,329 @@
+---
+// Simple version: the whole portfolio as one plain, readable document.
+// No JavaScript, no animation, no web fonts. All content comes from profile.json.
+import p from '../data/profile.json';
+
+const m = p.meta;
+const gh = (repo: string) => `${m.links.github}/${repo}`;
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Sort key from a period string such as "Jan 2018 – Dec 2019" or "2016 – 2020" (start date).
+const startKey = (period: string) => {
+  const y = period.match(/\d{4}/);
+  const mo = period.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
+  return (y ? Number(y[0]) : 0) * 100 + (mo ? MONTHS.indexOf(mo[1]) + 1 : 0);
+};
+const stations = [...p.stations].sort((a, b) => startKey(b.period) - startKey(a.period));
+
+// "2026-10-30" -> "Oct 2026"
+const fmtDate = (iso: string) => {
+  const [y, mo] = iso.split('-');
+  return mo ? `${MONTHS[Number(mo) - 1]} ${y}` : y;
+};
+
+// Projects grouped by their first tag, in a fixed reading order.
+const GROUPS: [string, string][] = [
+  ['ai', 'AI and machine learning'],
+  ['data', 'Data'],
+  ['web', 'Web'],
+  ['games', 'Games'],
+  ['xr', 'VR, AR and simulation'],
+];
+const known = new Set(GROUPS.map(([k]) => k));
+const projectGroups = [
+  ...GROUPS.map(([key, label]) => ({ key, label, items: p.projects.filter((x) => x.tags[0] === key) })),
+  { key: 'other', label: 'Other', items: p.projects.filter((x) => !known.has(x.tags[0])) },
+].filter((g) => g.items.length > 0);
+
+const certs = [...p.certificationsAll].sort((a, b) => (a.area === 'ai' ? 0 : 1) - (b.area === 'ai' ? 0 : 1));
+
+const title = `${m.name} — ${m.role} (simple version)`;
+const description = `${m.name}, ${m.role} in ${m.location}. ${m.headline} Plain one-page version of the portfolio: AI work, experience, projects, skills and recommendations.`;
+
+const toc = [
+  ['summary', 'Summary'],
+  ['ai-work', 'AI work'],
+  ['experience', 'Experience'],
+  ['projects', 'Projects'],
+  ['skills', 'Skills'],
+  ['research', 'Research'],
+  ['education', 'Education'],
+  ['certificates', 'Certificates'],
+  ['recommendations', 'Recommendations'],
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content={description} />
+  <link rel="canonical" href="https://shadmanarko.github.io/simple" />
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --bg: #ffffff;
+      --rule: #d6d6d6;
+      --link: #0b57d0;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e8e8e8;
+        --muted: #a8a8a8;
+        --bg: #121212;
+        --rule: #3a3a3a;
+        --link: #8ab4f8;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-wrap: break-word;
+    }
+    .page { max-width: 72ch; margin: 0 auto; padding: 24px 16px 64px; }
+    a { color: var(--link); text-underline-offset: 2px; }
+    a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    h1, h2, h3 { line-height: 1.25; font-weight: 700; }
+    h1 { font-size: 2rem; margin: 0.5rem 0 0.25rem; }
+    h2 {
+      font-size: 1.4rem;
+      margin: 2.75rem 0 1rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--rule);
+    }
+    h3 { font-size: 1.1rem; margin: 1.75rem 0 0.25rem; }
+    h4 { font-size: 1rem; margin: 1.5rem 0 0.5rem; }
+    p { margin: 0 0 1rem; }
+    ul { margin: 0.25rem 0 1rem; padding-left: 1.25rem; }
+    li { margin: 0.2rem 0; }
+    hr { border: 0; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
+    .muted { color: var(--muted); }
+    .small { font-size: 0.9rem; }
+    .back { font-size: 0.95rem; margin: 0; }
+    .role { font-size: 1.15rem; margin: 0 0 0.5rem; }
+    .headline { margin: 0 0 0.5rem; }
+    .contact { margin: 0.75rem 0 0; }
+    .proof { margin: 1rem 0 0; }
+    .meta { margin: 0 0 0.5rem; color: var(--muted); }
+    .label { font-weight: 600; }
+    .entry { margin-bottom: 1.5rem; }
+    .entry > h3 { margin-top: 1.5rem; }
+    nav.toc { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+    nav.toc h2 { border: 0; padding: 0; margin: 0 0 0.25rem; font-size: 1rem; }
+    nav.toc ol { margin: 0; padding-left: 1.5rem; columns: 2; column-gap: 2rem; }
+    nav.toc li { break-inside: avoid; margin: 0 0 0.2rem; }
+    .projects { list-style: none; padding: 0; margin-top: 0.75rem; }
+    .projects > li { margin: 0 0 1rem; }
+    .projects .ptitle { font-weight: 600; }
+    dl { margin: 0 0 1rem; }
+    dt { font-weight: 600; margin-top: 0.75rem; }
+    dd { margin: 0; }
+    blockquote {
+      margin: 1.5rem 0 0.25rem;
+      padding: 0 0 0 1rem;
+      border-left: 3px solid var(--rule);
+    }
+    blockquote p { margin: 0; }
+    .cite { margin: 0.35rem 0 0 1rem; font-size: 0.95rem; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.9rem; color: var(--muted); }
+
+    @media (max-width: 480px) {
+      body { font-size: 17px; }
+      h1 { font-size: 1.7rem; }
+      nav.toc ol { columns: 1; }
+    }
+
+    @media print {
+      :root { --text: #000; --muted: #333; --bg: #fff; --rule: #999; --link: #000; }
+      @page { margin: 16mm 14mm; }
+      body { font-size: 10.5pt; line-height: 1.4; }
+      .page { max-width: none; padding: 0; }
+      .back, nav.toc, .no-print { display: none; }
+      a { text-decoration: none; }
+      .contact a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.85em;
+      }
+      h2 { margin-top: 1.25rem; padding-top: 0.5rem; break-after: avoid; }
+      h3, h4 { break-after: avoid; }
+      .projects > li, figure, li, dt, dd, p { break-inside: avoid; }
+      .meta { break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="top">
+    <header>
+      <p class="back"><a href="/">← Interactive version</a></p>
+      <h1>{m.name}</h1>
+      <p class="role">{m.role}</p>
+      <p class="headline">{m.headline}</p>
+      <p class="muted">{m.status}</p>
+      <p class="contact">
+        <a href={`mailto:${m.email}`}>{m.email}</a> ·
+        <a href={m.links.linkedin}>LinkedIn</a> ·
+        <a href={m.links.github}>GitHub</a> ·
+        <a href={m.links.huggingface}>Hugging Face</a>
+      </p>
+      <p class="proof">
+        {p.proof.map((x, i) => (
+          <>{i > 0 && ' · '}<strong>{x.value}</strong> {x.label}</>
+        ))}
+      </p>
+      <nav class="toc" aria-label="Contents">
+        <h2>Contents</h2>
+        <ol>
+          {toc.map(([id, label]) => <li><a href={`#${id}`}>{label}</a></li>)}
+        </ol>
+      </nav>
+    </header>
+
+    <main>
+      <section id="summary" aria-labelledby="summary-h">
+        <h2 id="summary-h">Summary</h2>
+        {p.summary.map((para) => <p>{para}</p>)}
+      </section>
+
+      <section id="ai-work" aria-labelledby="ai-work-h">
+        <h2 id="ai-work-h">AI work</h2>
+        {p.caseStudies.map((cs) => (
+          <article class="entry" id={`cs-${cs.slug}`}>
+            <h3>{cs.title}</h3>
+            <p class="meta">{cs.client} · {cs.period}</p>
+            <p>{cs.oneLiner}</p>
+            <p><span class="label">Key result:</span> <strong>{cs.headlineMetric.value}</strong> {cs.headlineMetric.label}</p>
+            <ul>
+              {cs.metrics.map((x) => <li>{x}</li>)}
+            </ul>
+            <p><span class="label">Stack:</span> {cs.stack.join(', ')}</p>
+            {cs.note && <p class="muted small">Note: {cs.note}</p>}
+            {cs.demos && cs.demos.length > 0 && (
+              <p><span class="label">Live demos:</span>{' '}
+                {cs.demos.map((d, i) => <>{i > 0 && ' · '}<a href={d.url}>{d.label}</a></>)}
+              </p>
+            )}
+            {cs.repos.length > 0 && (
+              <p><span class="label">Code:</span>{' '}
+                {cs.repos.map((r, i) => <>{i > 0 && ' · '}<a href={gh(r)}>{r}</a></>)}
+              </p>
+            )}
+          </article>
+        ))}
+      </section>
+
+      <section id="experience" aria-labelledby="experience-h">
+        <h2 id="experience-h">Experience</h2>
+        <p class="muted small">Newest first. Education entries are marked.</p>
+        {stations.map((s) => (
+          <article class="entry">
+            <h3>{s.name}{s.kind === 'education' && <span class="muted"> (Education)</span>}</h3>
+            <p class="meta">{s.role} · {s.period} · {s.city}</p>
+            <ul>
+              {s.did.map((x) => <li>{x}</li>)}
+            </ul>
+            {s.clients.length > 0 && <p><span class="label">Clients:</span> {s.clients.join(', ')}</p>}
+            {s.stack.length > 0 && <p><span class="label">Stack:</span> {s.stack.join(', ')}</p>}
+          </article>
+        ))}
+      </section>
+
+      <section id="projects" aria-labelledby="projects-h">
+        <h2 id="projects-h">Projects</h2>
+        <p class="muted small">All {p.projects.length} projects, grouped by area. {p.projectsNote}</p>
+        {projectGroups.map((g) => (
+          <>
+            <h3>{g.label}</h3>
+            <ul class="projects">
+              {g.items.map((x) => (
+                <li>
+                  <span class="ptitle">{x.title}</span> <span class="muted">— {x.org}, {x.year}</span><br />
+                  {x.summary}
+                  {(x.caseStudy || (x.links && x.links.length > 0)) && (
+                    <><br /><span class="small">
+                      {x.caseStudy && <a href={`#cs-${x.caseStudy}`}>Details in AI work</a>}
+                      {x.caseStudy && x.links && x.links.length > 0 && ' · '}
+                      {x.links && x.links.map((l, i) => <>{i > 0 && ' · '}<a href={l.url}>{l.label}</a></>)}
+                    </span></>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        ))}
+      </section>
+
+      <section id="skills" aria-labelledby="skills-h">
+        <h2 id="skills-h">Skills</h2>
+        <h3>Capabilities</h3>
+        <dl>
+          {Object.entries(p.skills).map(([k, v]) => <><dt>{k}</dt><dd>{v.join(', ')}</dd></>)}
+        </dl>
+        <h3>Programming languages</h3>
+        <p>{p.languages.join(', ')}</p>
+        <h3>Spoken languages</h3>
+        <p>{p.spokenLanguages.map((l) => `${l.name} (${l.level})`).join(', ')}</p>
+        <h3>Frameworks and tools</h3>
+        <dl>
+          {Object.entries(p.frameworks).map(([k, v]) => <><dt>{k}</dt><dd>{v.join(', ')}</dd></>)}
+        </dl>
+      </section>
+
+      <section id="research" aria-labelledby="research-h">
+        <h2 id="research-h">Research</h2>
+        <p>
+          <a href={p.research.url}>{p.research.title}</a><br />
+          <span class="muted">{p.research.venue}, {p.research.year} · {p.research.role}</span>
+        </p>
+      </section>
+
+      <section id="education" aria-labelledby="education-h">
+        <h2 id="education-h">Education</h2>
+        <ul>
+          {p.education.map((e) => (
+            <li><strong>{e.title}</strong> — {e.org} <span class="muted">({e.period})</span></li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="certificates" aria-labelledby="certificates-h">
+        <h2 id="certificates-h">Certificates</h2>
+        <ul>
+          {certs.map((c) => (
+            <li><strong>{c.title}</strong> — {c.org}, {c.date}{c.note && <span class="muted"> ({c.note})</span>}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="recommendations" aria-labelledby="recommendations-h">
+        <h2 id="recommendations-h">Recommendations</h2>
+        <p class="muted small">{p.recommendations.length} recommendations, newest first.</p>
+        {p.recommendations.map((r) => (
+          <figure style="margin:0">
+            <blockquote><p>“{r.text}”</p></blockquote>
+            <figcaption class="cite">
+              — <strong>{r.name}</strong>, {r.relation} · {fmtDate(r.date)}<br />
+              <span class="muted small">{r.headline}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </section>
+    </main>
+
+    <footer>
+      <p>{m.fullName} · {m.location} · <a href={`mailto:${m.email}`}>{m.email}</a></p>
+      <p class="no-print"><a href="/">← Interactive version</a> · <a href="#top">Back to top</a></p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,126 @@
+---
+// Experience ("Shift log"): a level-select map of every stop (two worlds,
+// Dhaka and Berlin) above a long receipt with one entry per station: jobs
+// and the two schools. Newest first by default; a toggle flips to career
+// order (the script just reverses the list, so no-JS gets newest first).
+import p from '../../data/profile.json';
+import PixelIcon from './PixelIcon.astro';
+
+const shortName = (c: string) =>
+  c.split(',')[0].split(' / ')[0].replace(/\s*\(.*\)/, '').replace(' Software', '').replace(' Interactive', '');
+const year = (period: string) => period.match(/\d{4}/)?.[0] ?? '';
+const projTitle = Object.fromEntries(p.projects.map((x) => [x.id, x.title]));
+const stops = p.stations.map((s) => ({ ...s, y: year(s.period), short: shortName(s.name) }));
+const dhaka = stops.filter((s) => s.city === 'Dhaka');
+const berlin = stops.filter((s) => s.city === 'Berlin');
+const newestFirst = [...stops].reverse();
+const nWork = stops.filter((s) => s.kind === 'work').length;
+const nEdu = stops.length - nWork;
+
+// Top-down plane, nose pointing right (Dhaka -> Berlin), swept-back wings.
+const plane = [
+  '.....11.......',
+  '.....191......',
+  '......171.....',
+  '11.....171....',
+  '171111117111..',
+  '17777777777771',
+  '171111117111..',
+  '11.....171....',
+  '......171.....',
+  '.....191......',
+  '.....11.......',
+];
+const berlinYear = berlin[0]?.y ?? '';
+---
+<section class="sec" id="experience" aria-labelledby="exp-h">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kick">The shift log · {nWork} jobs and {nEdu} schools since 2016</span>
+      <h2 id="exp-h" tabindex="-1">Experience</h2>
+      <p>
+        Two worlds so far: Dhaka, where I learned to ship, and Berlin. Pick a level to jump to that stop, or read the
+        receipt straight down. Each entry lists what I did, the projects (linked to their cards), clients and stack.
+      </p>
+    </div>
+
+    <nav class="levelmap panel" aria-label="Career levels">
+      <div class="worlds">
+        <div class="world">
+          <h3>World 1 · Dhaka</h3>
+          <ol>
+            {dhaka.map((s, i) => (
+              <li><a class:list={['node', { edu: s.kind === 'education' }]} href={`#station-${s.id}`} aria-label={`Level 1-${i + 1}: ${s.name}, ${s.period}`}><span class="dot">1-{i + 1}</span><span class="nm">{s.short}</span><span class="yr">{s.y}</span></a></li>
+            ))}
+          </ol>
+        </div>
+        <div class="flight" aria-hidden="true"><PixelIcon s={plane} size={22} /> {berlinYear}</div>
+        <div class="world berlin">
+          <h3>World 2 · Berlin</h3>
+          <ol>
+            {berlin.map((s, i) => (
+              <li><a class:list={['node', { edu: s.kind === 'education' }]} href={`#station-${s.id}`} aria-label={`Level 2-${i + 1}: ${s.name}, ${s.period}`}><span class="dot">2-{i + 1}</span><span class="nm">{s.short}</span><span class="yr">{s.y}</span></a></li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <p class="map-key"><span class="k-job" aria-hidden="true"></span> Job <span class="k-edu" aria-hidden="true"></span> School</p>
+    </nav>
+
+    <div class="order-toggle" role="group" aria-label="Order of the entries">
+      <span class="label">Order</span>
+      <button type="button" class="btn small" aria-pressed="true" data-order="newest">Newest first</button>
+      <button type="button" class="btn small" aria-pressed="false" data-order="career">Career order</button>
+    </div>
+
+    <div class="receipt-wrap">
+      <div class="receipt">
+        <div class="receipt-top" aria-hidden="true"><strong>Shift log</strong>{p.meta.name} · 2018 – today</div>
+        <ol class="jobs" data-jobs>
+          {newestFirst.map((s) => (
+            <li class:list={['job', { 'is-edu': s.kind === 'education' }]} id={`station-${s.id}`}>
+              <div class="job-line">
+                <h3>{s.name}</h3>
+                <span class="when">{s.period}</span>
+              </div>
+              <p class="role">
+                {s.role} <span class="where">· {s.city}</span>
+                {s.kind === 'education' && <span class="stamp">School</span>}
+              </p>
+              <p class="overview">{s.overview}</p>
+              <p class="about-co">{s.about}</p>
+              <div class="job-grid">
+                <div>
+                  <h4>{s.kind === 'education' ? 'What I learned & did' : 'What I did'}</h4>
+                  <ul class="did">{s.did.map((d) => <li>{d}</li>)}</ul>
+                </div>
+                <div class="job-meta">
+                  {s.projects.length > 0 && (
+                    <>
+                      <h4>Projects · {s.projects.length}</h4>
+                      <ul class="plist">
+                        {s.projects.map((id) => <li><a href={`#project-${id}`}>{projTitle[id] ?? id}</a></li>)}
+                      </ul>
+                    </>
+                  )}
+                  {s.clients.length > 0 && (
+                    <>
+                      <h4>Clients</h4>
+                      <p class="clients">{s.clients.join(' · ')}</p>
+                    </>
+                  )}
+                  <h4>Stack</h4>
+                  <ul class="chips" aria-label="Stack">{s.stack.map((t) => <li>{t}</li>)}</ul>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div class="receipt-total">
+          <p class="tot">Total: {p.proof[0].value} · {p.proof[1].value} projects · {p.proof[2].value.toLowerCase()} of users</p>
+          <p lang="de"><strong>Vielen Dank für Ihren Besuch!</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

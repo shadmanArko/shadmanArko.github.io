@@ -1,0 +1,113 @@
+---
+// Main page: Shadman Arko's portfolio, with a playful kitchen theme
+// ("Bots & Biryani") inspired by the Berlin cloud kitchen where he works. Content first: every fact lives in the semantic page,
+// read from src/data/profile.json. The career tour (src/components/tour) is
+// a self-contained component; everything else lives in src/components/site.
+import p from '../data/profile.json';
+import '../components/site/site.css';
+import Hud from '../components/site/Hud.astro';
+import Hero from '../components/site/Hero.astro';
+import Tour from '../components/tour/Tour.astro';
+import Work from '../components/site/Work.astro';
+import Projects from '../components/site/Projects.astro';
+import Journey from '../components/site/Journey.astro';
+import Experience from '../components/site/Experience.astro';
+import About from '../components/site/About.astro';
+import Credentials from '../components/site/Credentials.astro';
+import References from '../components/site/References.astro';
+import ContactCv from '../components/site/ContactCv.astro';
+
+import * as S from '../scripts/site/sprites';
+
+// Favicon: the HUD's "SA" pixel badge as an inline SVG (no image file, no 404).
+const sa = S.textSprite('SA', '1', '5', 2);
+const badge = ['1'.repeat(sa[0].length + 2), ...sa.map((r) => `1${r}1`), '1'.repeat(sa[0].length + 2)];
+let rects = '';
+badge.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') rects += `<rect x='${x}' y='${y}' width='1.02' height='1.02' fill='${S.PAL[ch]}'/>`; }));
+const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -1 ${badge[0].length} ${badge[0].length}' shape-rendering='crispEdges'>${rects}</svg>`)}`;
+
+const title = `${p.meta.name} · ${p.meta.role}`;
+const site = p.meta.links.site;
+const url = `${site}/`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: p.meta.fullName,
+  alternateName: p.meta.name,
+  jobTitle: p.meta.role,
+  description: p.meta.headline,
+  email: `mailto:${p.meta.email}`,
+  url,
+  image: new URL(p.meta.avatar, site).href,
+  address: { '@type': 'PostalAddress', addressLocality: 'Berlin', addressCountry: 'DE' },
+  sameAs: [p.meta.links.linkedin, p.meta.links.github, p.meta.links.huggingface],
+  alumniOf: p.education.map((e) => ({ '@type': 'EducationalOrganization', name: e.org })),
+  knowsAbout: [...new Set([...Object.values(p.skills).flat(), ...p.languages])],
+};
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={p.meta.headline} />
+    <meta name="theme-color" content="#FFF1D6" />
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={p.meta.headline} />
+    <meta property="og:type" content="profile" />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={new URL(p.meta.avatar, site).href} />
+    <link rel="canonical" href={url} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Pixelify+Sans:wght@600&family=Silkscreen&display=swap"
+      rel="stylesheet"
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Hud />
+    <main id="main">
+      <Hero />
+      <section class="tour-sec" id="career-tour" aria-labelledby="tour-h">
+        <div class="wrap">
+          <div class="tour-head">
+            <span class="kick">Press play · the guided tour</span>
+            <h2 id="tour-h" tabindex="-1">Career tour</h2>
+            <p>Press play and I'll walk you through my career, stop by stop: 11 stops from Dhaka to Berlin, from games to AI. Or click any building.</p>
+          </div>
+        </div>
+        <Tour />
+      </section>
+      <Work />
+      <Projects />
+      <Journey />
+      <Experience />
+      <About />
+      <Credentials />
+      <References />
+      <ContactCv />
+    </main>
+    <footer class="foot">
+      <div class="wrap">
+        <p class="danke" lang="de">Vielen Dank!</p>
+        <p>
+          Hand-placed pixels, no image files except one photo. Every number on this page comes from a real project.
+          Third-party names appear as text only.
+        </p>
+        <p class="foot-btns">
+          <a class="btn primary" href="/simple">Simple version</a>
+          <a class="btn" href="#cv">CV / PDF</a>
+        </p>
+        <p><a href="#top">Back to the top</a> · <a href={`mailto:${p.meta.email}`}>{p.meta.email}</a></p>
+      </div>
+    </footer>
+    <script>
+      import '../scripts/site/page';
+    </script>
+  </body>
+</html>
