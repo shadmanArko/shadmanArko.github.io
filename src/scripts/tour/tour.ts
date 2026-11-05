@@ -274,14 +274,17 @@ export function initTour(root: HTMLElement) {
   let voice: SpeechSynthesisVoice | null = null;
   const speech = { token: 0, k: 0, n: 0, active: false, done: true, t0: 0, est: 1, keep: null as SpeechSynthesisUtterance | null, timer: 0 };
 
+  // macOS/iOS novelty voices that should never narrate a CV.
+  const NOVELTY = /Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Junior|Ralph|Kathy|Fred|Grandma|Grandpa|Rocko|Shelley|Sandy|Flo|Eddy|Reed/i;
   function pickVoice() {
     if (!synth) return;
-    const vs = synth.getVoices().filter((v) => /^en([-_]|$)/i.test(v.lang));
+    const vs = synth.getVoices().filter((v) => /^en([-_]|$)/i.test(v.lang) && !NOVELTY.test(v.name));
+    // Prefer voices installed on the device: Chrome's online "Google ..." voices often fail silently.
     const score = (v: SpeechSynthesisVoice) =>
+      (v.localService ? 10 : 0) +
       (/en[-_]GB/i.test(v.lang) ? 3 : /en[-_]US/i.test(v.lang) ? 2 : 1) +
-      (/natural|neural|premium|enhanced|Google/i.test(v.name) ? 2 : 0) +
-      (v.localService ? 1 : 0) +
-      (/Daniel|Arthur|Google UK English Male|Ryan|Guy/i.test(v.name) ? 1 : 0);
+      (/natural|neural|premium|enhanced/i.test(v.name) ? 2 : 0) +
+      (/Daniel|Arthur|Ryan|Guy|Microsoft (Ryan|George|Guy)|Samantha/i.test(v.name) ? 1 : 0);
     voice = vs.sort((a, b) => score(b) - score(a))[0] || null;
   }
   if (synth) {
@@ -304,7 +307,7 @@ export function initTour(root: HTMLElement) {
     kick();
     syncButtons();
   }
-  function speakBullet(token: number, i: number, k: number) {
+  function speakBullet(token: number, i: number, k: number, fallback = false) {
     if (!synth || token !== speech.token) return;
     clearTimeout(speech.timer);
     highlight(k);
@@ -318,17 +321,26 @@ export function initTour(root: HTMLElement) {
     speech.k = k;
     const text = data[i].narration[k];
     const u = new SpeechSynthesisUtterance(text);
-    if (voice) u.voice = voice;
-    u.lang = voice?.lang || 'en-GB';
+    const useVoice = fallback ? null : voice;
+    if (useVoice) u.voice = useVoice;
+    u.lang = useVoice?.lang || 'en-GB';
     u.rate = Math.min(1.5, Math.max(0.7, 0.95 * speed));
     u.pitch = 1;
     speech.keep = u; // keep a reference: Chrome drops events of collected utterances
     speech.t0 = performance.now();
     speech.est = (text.length * 68) / u.rate + 400;
     let ended = false;
+    let started = false;
+    u.onstart = () => (started = true);
     const done = () => {
       if (ended || token !== speech.token) return;
       ended = true;
+      // The chosen voice never actually spoke (silent failure): retry this bullet once with the device default voice.
+      if (!started && !fallback) {
+        clearTimeout(speech.timer);
+        if (voice) voice = null; // stop using the broken voice for the rest of the tour
+        return speakBullet(token, i, k, true);
+      }
       speakBullet(token, i, k + 1);
     };
     u.onend = done;
@@ -337,6 +349,7 @@ export function initTour(root: HTMLElement) {
       done();
     };
     speech.timer = window.setTimeout(done, speech.est * 2 + 4000); // safety net if onend never fires
+    if (synth.paused) synth.resume(); // Chrome can leave the queue paused after a tab switch
     synth.speak(u);
   }
   function speechProgress() {
