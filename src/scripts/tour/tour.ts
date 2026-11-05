@@ -272,20 +272,33 @@ export function initTour(root: HTMLElement) {
   const synth: SpeechSynthesis | null = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined' ? window.speechSynthesis : null;
   let voiceOn = false;
   let voice: SpeechSynthesisVoice | null = null;
+  let maleVoice = false;
   const speech = { token: 0, k: 0, n: 0, active: false, done: true, t0: 0, est: 1, keep: null as SpeechSynthesisUtterance | null, timer: 0 };
 
   // macOS/iOS novelty voices that should never narrate a CV.
   const NOVELTY = /Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Junior|Ralph|Kathy|Fred|Grandma|Grandpa|Rocko|Shelley|Sandy|Flo|Eddy|Reed/i;
+  // Natural-sounding male English voices by platform:
+  // Apple (macOS/iOS) · Microsoft (Windows, Edge "Natural") · Android Google TTS male voice codes.
+  const MALE =
+    /\b(Daniel|Arthur|Oliver|Tom|Evan|Nathan|Aaron|Alex|Rishi|Gordon|Lee|Microsoft (Ryan|Guy|Andrew|Brian|Christopher|Eric|Steffan|Thomas|Roger|William|Liam|David|George|Mark|James|Richard))\b|Google UK English Male|en-(us|gb|au|in)-x-(iol|iom|tpd|gbd|rjs|gbg|aud|ene)/i;
+  const NATURAL = /natural|neural|premium|enhanced|online/i;
   function pickVoice() {
     if (!synth) return;
     const vs = synth.getVoices().filter((v) => /^en([-_]|$)/i.test(v.lang) && !NOVELTY.test(v.name));
-    // Prefer voices installed on the device: Chrome's online "Google ..." voices often fail silently.
-    const score = (v: SpeechSynthesisVoice) =>
-      (v.localService ? 10 : 0) +
-      (/en[-_]GB/i.test(v.lang) ? 3 : /en[-_]US/i.test(v.lang) ? 2 : 1) +
-      (/natural|neural|premium|enhanced/i.test(v.name) ? 2 : 0) +
-      (/Daniel|Arthur|Ryan|Guy|Microsoft (Ryan|George|Guy)|Samantha/i.test(v.name) ? 1 : 0);
+    const isEdge = /Edg\//.test(navigator.userAgent);
+    const score = (v: SpeechSynthesisVoice) => {
+      const name = `${v.name} ${v.voiceURI}`;
+      // Chrome's online "Google ..." voices often fail silently; Edge's online "Natural" voices are reliable.
+      const usable = v.localService || (isEdge && /Microsoft/i.test(v.name)) ? 8 : /Google/i.test(v.name) ? -15 : 0;
+      return (
+        usable +
+        (MALE.test(name) ? 20 : 0) +
+        (NATURAL.test(v.name) ? 6 : 0) +
+        (/en[-_]GB/i.test(v.lang) ? 3 : /en[-_]US/i.test(v.lang) ? 2 : 1)
+      );
+    };
     voice = vs.sort((a, b) => score(b) - score(a))[0] || null;
+    maleVoice = !!voice && MALE.test(`${voice.name} ${voice.voiceURI}`);
   }
   if (synth) {
     voiceBtn.hidden = false;
@@ -325,7 +338,8 @@ export function initTour(root: HTMLElement) {
     if (useVoice) u.voice = useVoice;
     u.lang = useVoice?.lang || 'en-GB';
     u.rate = Math.min(1.5, Math.max(0.7, 0.95 * speed));
-    u.pitch = 1;
+    // No male voice on this device: lower the default voice slightly for a deeper, calmer read.
+    u.pitch = useVoice && maleVoice ? 1 : 0.85;
     speech.keep = u; // keep a reference: Chrome drops events of collected utterances
     speech.t0 = performance.now();
     speech.est = (text.length * 68) / u.rate + 400;
@@ -637,6 +651,8 @@ export function initTour(root: HTMLElement) {
 
   setCurrent(0);
   updateInset();
+  // Voice is on by default: narration starts with the first press of Play (a user gesture).
+  if (synth) setVoice(true);
   syncButtons();
   root.classList.add('is-ready');
 
