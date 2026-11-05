@@ -273,7 +273,7 @@ export function initTour(root: HTMLElement) {
   let voiceOn = false;
   let voice: SpeechSynthesisVoice | null = null;
   let maleVoice = false;
-  const speech = { token: 0, k: 0, n: 0, active: false, done: true, t0: 0, est: 1, keep: null as SpeechSynthesisUtterance | null, timer: 0 };
+  const speech = { token: 0, k: 0, n: 0, active: false, done: true, t0: 0, est: 1, keep: null as SpeechSynthesisUtterance | null, timer: 0, watch: 0 };
 
   // macOS/iOS novelty voices that should never narrate a CV.
   const NOVELTY = /Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Junior|Ralph|Kathy|Fred|Grandma|Grandpa|Rocko|Shelley|Sandy|Flo|Eddy|Reed/i;
@@ -310,13 +310,18 @@ export function initTour(root: HTMLElement) {
     if (!synth) return;
     speech.token++;
     const token = speech.token;
-    synth.cancel();
+    // Chrome (macOS) hangs silently if speak() follows cancel() too closely, so only cancel when something
+    // is actually queued, and then give the engine a moment. Otherwise speak right away: when this runs
+    // inside a tap, that also satisfies iOS Safari's "first speech must come from a user gesture" rule.
+    const busy = synth.speaking || synth.pending;
+    if (busy) synth.cancel();
     speech.n = data[i].narration.length;
     speech.k = k;
     speech.active = true;
     speech.done = false;
     hold.after = 0;
-    window.setTimeout(() => speakBullet(token, i, k), 80);
+    if (busy) window.setTimeout(() => speakBullet(token, i, k), 300);
+    else speakBullet(token, i, k);
     kick();
     syncButtons();
   }
@@ -345,10 +350,14 @@ export function initTour(root: HTMLElement) {
     speech.est = (text.length * 68) / u.rate + 400;
     let ended = false;
     let started = false;
-    u.onstart = () => (started = true);
+    u.onstart = () => {
+      started = true;
+      clearTimeout(speech.watch);
+    };
     const done = () => {
       if (ended || token !== speech.token) return;
       ended = true;
+      clearTimeout(speech.watch);
       // The chosen voice never actually spoke (silent failure): retry this bullet once with the device default voice.
       if (!started && !fallback) {
         clearTimeout(speech.timer);
@@ -357,6 +366,21 @@ export function initTour(root: HTMLElement) {
       }
       speakBullet(token, i, k + 1);
     };
+    // Watchdog: if speech hasn't started within 2 s the engine is stuck (a known Chrome bug).
+    // Reset it and retry with the default voice; if that is stuck too, carry on silently.
+    clearTimeout(speech.watch);
+    speech.watch = window.setTimeout(() => {
+      if (started || ended || token !== speech.token) return;
+      ended = true;
+      clearTimeout(speech.timer);
+      synth.cancel();
+      if (!fallback) {
+        if (voice) voice = null;
+        window.setTimeout(() => speakBullet(token, i, k, true), 300);
+      } else {
+        speech.timer = window.setTimeout(() => speakBullet(token, i, k + 1, true), Math.max(0, speech.est - 2000));
+      }
+    }, 2000);
     u.onend = done;
     u.onerror = (e) => {
       if (e.error === 'interrupted' || e.error === 'canceled') return;
@@ -377,6 +401,7 @@ export function initTour(root: HTMLElement) {
   function stopSpeech() {
     speech.token++;
     clearTimeout(speech.timer);
+    clearTimeout(speech.watch);
     if (synth && (speech.active || synth.speaking)) synth.cancel();
     speech.active = false;
     speech.done = true;
@@ -505,8 +530,9 @@ export function initTour(root: HTMLElement) {
   // iOS Safari only lets a page speak if the first speak() happens synchronously inside a tap.
   // Speak a silent utterance in the gesture once; later (timer-driven) narration then works.
   let speechPrimed = false;
+  const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   function primeSpeech() {
-    if (!synth || speechPrimed) return;
+    if (!synth || speechPrimed || !isIOS) return;
     try {
       const u = new SpeechSynthesisUtterance(' ');
       u.volume = 0;
