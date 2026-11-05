@@ -39,6 +39,7 @@ export function initTour(root: HTMLElement) {
   const more = $<HTMLButtonElement>(root, '[data-more]');
   const playBtn = $<HTMLButtonElement>(root, '[data-act="play"]');
   const voiceBtn = $<HTMLButtonElement>(root, '[data-act="voice"]');
+  const controlsEl = $(root, '.ct-controls');
   const status = $(root, '[data-status]');
   const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-dot]'));
   const stops = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-stop]'));
@@ -188,6 +189,8 @@ export function initTour(root: HTMLElement) {
   }
 
   function play() {
+    // Pressing Play is an explicit request for the animation, so walk even when the OS asks for reduced motion.
+    engine.setReduced(false);
     if (mode === 'done') {
       restart();
       return;
@@ -216,6 +219,7 @@ export function initTour(root: HTMLElement) {
   }
 
   function restart() {
+    engine.setReduced(false);
     stopSpeech();
     playing = true;
     cur = 0;
@@ -471,12 +475,33 @@ export function initTour(root: HTMLElement) {
       if (tipFor === i) hideTip();
     });
   });
+  // iOS Safari only lets a page speak if the first speak() happens synchronously inside a tap.
+  // Speak a silent utterance in the gesture once; later (timer-driven) narration then works.
+  let speechPrimed = false;
+  function primeSpeech() {
+    if (!synth || speechPrimed) return;
+    try {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.volume = 0;
+      synth.speak(u);
+      speechPrimed = true;
+    } catch {
+      /* ignore */
+    }
+  }
+
   more.addEventListener('click', () => openDetail(Number(more.dataset.i || cur), more));
 
   root.querySelectorAll<HTMLButtonElement>('[data-act]').forEach((b) =>
     b.addEventListener('click', () => {
       const a = b.dataset.act;
+      if (a === 'voice' && !voiceOn) primeSpeech();
+      if ((a === 'play' || a === 'bigplay' || a === 'restart') && voiceOn) primeSpeech();
+      const starting = a === 'bigplay' || (a === 'play' && !playing);
       if (a === 'play') (playing ? pause : play)();
+      if (a === 'bigplay') play();
+      // On phones, bring controls + map fully into view (clear of the bottom tab bar) when the tour starts.
+      if (starting && !wideMQ.matches) controlsEl.scrollIntoView({ block: 'start', behavior: reducedMQ.matches ? 'auto' : 'smooth' });
       if (a === 'prev') prev();
       if (a === 'next') next();
       if (a === 'restart') restart();

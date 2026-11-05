@@ -86,6 +86,11 @@ const icon = {
         }
       </div>
       <div class="ct-tip" data-tip aria-hidden="true" hidden></div>
+      <!-- Big, always-reachable start button on the map itself (phones hide the control bar under the tab bar). -->
+      <button type="button" class="ct-btn ct-bigplay" data-act="bigplay" aria-label="Play the tour">
+        <svg class="ct-ico" viewBox="0 0 8 8" aria-hidden="true"><path d={icon.play} /></svg>
+        <span data-biglabel>Play the tour</span>
+      </button>
     </div>
 
     <div class="ct-controls" role="group" aria-label="Tour controls">
@@ -468,6 +473,17 @@ const icon = {
   .ct-dot.is-on { background: var(--ct-mint); }
   .ct-dot.is-now { background: var(--ct-saffron); }
 
+  /* Big play button on the map: bottom-right on wide screens (clear of the panel), centred on phones. */
+  .ct-bigplay {
+    position: absolute; right: 20px; bottom: 20px; z-index: 3;
+    min-height: 56px; padding: 10px 22px; font-size: 16px;
+    background: var(--ct-saffron);
+    box-shadow: 4px 4px 0 rgba(43, 34, 53, 0.35);
+  }
+  .ct-bigplay .ct-ico { width: 20px; height: 20px; }
+  .ct-bigplay:hover { background: #ffd877; }
+  .ct.is-playing .ct-bigplay { display: none; }
+
   /* ---------------------------------------------------------------- station list (screen readers, no JS) */
   .ct-list { margin: 20px 0 0; }
   .ct-list ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
@@ -515,6 +531,11 @@ const icon = {
 
   /* ---------------------------------------------------------------- narrow screens: panel below the map */
   @media (max-width: 899px) {
+    /* Controls above the map so the phone's bottom tab bar never covers Play. */
+    .ct-frame { display: flex; flex-direction: column; }
+    .ct-controls { order: -1; margin: 0 0 12px; scroll-margin-top: 8px; /* the page already pads for the sticky header */ }
+    .ct-bigplay { left: 50%; right: auto; bottom: auto; top: 50%; transform: translate(-50%, -50%); }
+    .ct-bigplay:active { transform: translate(-50%, calc(-50% + 2px)); }
     .ct-stage { height: clamp(280px, 46vh, 380px); }
     .ct-bullets { overflow: visible; }
     .ct-panel {
@@ -529,11 +550,15 @@ const icon = {
     .ct-where { margin-left: 0; width: 100%; justify-content: space-between; }
   }
   @media (max-width: 480px) {
+    /* Phones: one compact control row, a shorter map, so controls + map + narration fit one screen. */
     .ct { padding: 0 12px; }
-    .ct-stage { height: 300px; box-shadow: 4px 4px 0 var(--ct-shadow); }
-    .ct-play { min-width: 0; flex: 1; }
-    .ct-transport { width: 100%; }
-    .ct-opts { width: 100%; justify-content: space-between; }
+    .ct-stage { height: clamp(210px, calc(100svh - 430px), 260px); box-shadow: 4px 4px 0 var(--ct-shadow); }
+    .ct-controls { flex-wrap: nowrap; gap: 6px; }
+    .ct-transport { flex: 1; min-width: 0; }
+    .ct-play { min-width: 0; flex: 1; padding: 6px 8px; }
+    .ct-speed, .ct-where { display: none; }
+    .ct-voice { padding: 6px; }
+    .ct-voice [data-label] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .ct-dots { gap: 3px; }
     .ct-dot { width: 9px; height: 9px; }
     .ct-sign-name { font-size: 11px; }
