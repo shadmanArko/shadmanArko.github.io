@@ -1174,6 +1174,22 @@
       ]
     },
     {
+      "id": "nyc-taxi-lakehouse",
+      "title": "NYC Taxi Lakehouse — trusted daily revenue",
+      "org": "Independent project",
+      "year": "2026",
+      "tags": [
+        "data"
+      ],
+      "summary": "Production-style lakehouse on public NYC taxi data, built client-first (discovery, scope, ADRs, then code): S3 landing via Terraform, bronze/silver/gold in dbt on DuckDB and Databricks, Airflow, CI. 146,486 raw rows → 145,968 clean + 518 quarantined with reasons; 16 checks pass on both engines and Gold reconciles to source 100%.",
+      "links": [
+        {
+          "label": "GitHub",
+          "url": "https://github.com/shadmanArko/nyc-taxi-lakehouse"
+        }
+      ]
+    },
+    {
       "id": "home-credit",
       "title": "Home Credit default risk",
       "org": "neue fische",
@@ -1839,7 +1855,10 @@
       "pgvector",
       "Redis",
       "MongoDB",
-      "Metabase"
+      "Metabase",
+      "Databricks",
+      "Delta Lake",
+      "Apache Airflow"
     ],
     "Backend & web": [
       "FastAPI",
@@ -1875,7 +1894,8 @@
       "Flutter"
     ],
     "Cloud & DevOps": [
-      "AWS (Lambda, ECR, API Gateway, EC2)",
+      "AWS (Lambda, ECR, API Gateway, EC2, S3)",
+      "Terraform",
       "Docker",
       "GitHub Actions",
       "Jenkins",
